@@ -86,14 +86,14 @@ const Page = () => {
       </p>
       <h2 className="text-[20px] mt-6 font-semibold">User Content </h2>
       <p className="text-[16px] mt-2 text-[#242424]">
-        Our services may allow you to upload, submit, or transmit content ("User
-        Content"). By submitting User Content, you represent and warrant that
-        you have all necessary rights to do so and that the User Content does
-        not violate any laws or infringe upon the rights of any third party. You
-        grant us a worldwide, non-exclusive, royalty-free license to use,
-        reproduce, modify, adapt, publish, translate, create derivative works
-        from, distribute, and display the User Content in connection with our
-        services.
+        Our services may allow you to upload, submit, or transmit content
+        (&quot;User Content&quot;). By submitting User Content, you represent
+        and warrant that you have all necessary rights to do so and that the
+        User Content does not violate any laws or infringe upon the rights of
+        any third party. You grant us a worldwide, non-exclusive, royalty-free
+        license to use, reproduce, modify, adapt, publish, translate, create
+        derivative works from, distribute, and display the User Content in
+        connection with our services.
       </p>
       <h2 className="text-[20px] mt-6 font-semibold">
         Third-Party Services and Links
@@ -130,8 +130,8 @@ const Page = () => {
         You agree to indemnify, defend, and hold harmless Hasher, its
         affiliates, officers, employees, agents, suppliers, and licensors from
         and against any claims, liabilities, damages, losses, and expenses,
-        including reasonable attorneys' fees, arising out of or related to your
-        violation of these Terms or your use of our services.
+        including reasonable attorneys&apos; fees, arising out of or related to
+        your violation of these Terms or your use of our services.
       </p>
       <h2 className="text-[20px] mt-6 font-semibold">Termination</h2>
       <p className="text-[16px] mt-2 text-[#242424]">
@@ -203,7 +203,7 @@ const Page = () => {
         receipt of your email. All refunds will be credited back to the source
         of payment after deducting any applicable service charges and taxes. The
         refund may take 3-21 days to reflect in your bank account, depending on
-        your bank's policy.
+        your bank&apos;s policy.
       </p>
       <h2 className="text-[20px] mt-6 font-semibold">
         Intellectual Property Infringement
@@ -238,18 +238,18 @@ const Page = () => {
         <li>
           A statement by you, made under penalty of perjury, that the above
           information in your notice is accurate and that you are the copyright
-          owner or authorized to act on the copyright owner's behalf.
+          owner or authorized to act on the copyright owner&apos;s behalf.
         </li>
       </ul>
       <h2 className="text-[20px] mt-6 font-semibold">
         Disclaimer of Warranties{" "}
       </h2>
       <p className="text-[16px] mt-2 text-[#242424]">
-        OUR SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT ANY
-        WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT
-        LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-        PARTICULAR PURPOSE, NON-INFRINGEMENT, AND ANY WARRANTIES ARISING FROM
-        COURSE OF DEALING OR USAGE OF TRADE.
+        OUR SERVICES ARE PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot;
+        WITHOUT ANY WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED,
+        INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, AND ANY WARRANTIES
+        ARISING FROM COURSE OF DEALING OR USAGE OF TRADE.
       </p>
       <h2 className="text-[20px] mt-6 font-semibold">Customer Support</h2>
       <p className="text-[16px] mt-2 text-[#242424]">

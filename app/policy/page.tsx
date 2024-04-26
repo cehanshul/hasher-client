@@ -9,12 +9,12 @@ const Policy = () => {
         Effective Date : April 1, 2024
       </p>
       <p className="text-[16px] mt-8 text-[#242424]">
-        This Privacy Policy describes how Hasher (&quot;Hasher&quot;, "we", "us"
-        or "our") collects, uses, and discloses your Personal Information when
-        you visit or use our websites, mobile applications, and other online
-        products and services (collectively, the "Services"), contact our
-        customer service team, engage with us on social media, or otherwise
-        interact with us.
+        This Privacy Policy describes how Hasher (&quot;Hasher&quot;,
+        &quot;we&quot;, &quot;us&quot; or &quot;our&quot;) collects, uses, and
+        discloses your Personal Information when you visit or use our websites,
+        mobile applications, and other online products and services
+        (collectively, the &quot;Services&quot;), contact our customer service
+        team, engage with us on social media, or otherwise interact with us.
       </p>
       <p className="text-[16px] mt-6 text-[#242424]">
         We respect your privacy and are committed to protecting your Personal
@@ -24,22 +24,22 @@ const Policy = () => {
         Terms of Service.
       </p>
       <p className="text-[16px] mt-6 text-[#242424]">
-        "Cookies" are data files that are placed on your device or computer and
-        often include an anonymous unique identifier.
+        &quot;Cookies&quot; are data files that are placed on your device or
+        computer and often include an anonymous unique identifier.
       </p>
 
       <p className="text-[16px] mt-6 text-[#242424]">
-        "Log files" track actions occurring on the Services, and collect data
-        including your IP address, browser type, Internet service provider,
-        referring/exit pages, and date/time stamps.
+        &quot;Log files&quot; track actions occurring on the Services, and
+        collect data including your IP address, browser type, Internet service
+        provider, referring/exit pages, and date/time stamps.
       </p>
       <h2 className="text-[22px] mt-10 font-bold">
         Personal Information we collect
       </h2>
       <p className="text-[16px] mt-4 text-[#242424]">
         We collect information that alone or in combination with other
-        information in our possession could be used to identify you ("Personal
-        Information") as follows:
+        information in our possession could be used to identify you
+        (&quot;Personal Information&quot;) as follows:
       </p>
       <p className="text-[16px] mt-6 text-[#242424]">
         <span className="font-bold">Personal Information You Provide: </span> We
@@ -213,7 +213,7 @@ const Policy = () => {
         <li>
           <span className="font-bold">Emails: </span>
           Emails: You can unsubscribe from commercial email communications from
-          us by clicking on the "unsubscribe link" provided in such
+          us by clicking on the &quot;unsubscribe link&quot; provided in such
           communications. You may not opt out of service-related communications
           (e.g., account verification, transactional communications,
           changes/updates to features of the Services, technical and security
@@ -228,16 +228,16 @@ const Policy = () => {
         <li>
           <span className="font-bold">Do Not Track: </span>
           Most web browsers and some mobile operating systems and mobile
-          applications include a Do-Not-Track ("DNT") feature or setting you can
-          activate to signal your privacy preference not to have data about your
-          online browsing activities monitored and collected. At this stage no
-          uniform technology standard for recognizing and implementing DNT
-          signals has been finalized. As such, we do not currently respond to
-          DNT browser signals or any other mechanism that automatically
-          communicates your choice not to be tracked online. If a standard for
-          online tracking is adopted that we must follow in the future, we will
-          inform you about that practice in a revised version of this privacy
-          notice.
+          applications include a Do-Not-Track (&quot;DNT&quot;) feature or
+          setting you can activate to signal your privacy preference not to have
+          data about your online browsing activities monitored and collected. At
+          this stage no uniform technology standard for recognizing and
+          implementing DNT signals has been finalized. As such, we do not
+          currently respond to DNT browser signals or any other mechanism that
+          automatically communicates your choice not to be tracked online. If a
+          standard for online tracking is adopted that we must follow in the
+          future, we will inform you about that practice in a revised version of
+          this privacy notice.
         </li>
       </ul>
       <h2 className="text-[22px] mt-8 font-bold">Third Party Websites </h2>
@@ -276,7 +276,7 @@ const Policy = () => {
         Information and isolate it from any further processing until deletion is
         possible.
       </p>
-      <h2 className="text-[22px] mt-10 font-bold">Children's Privacy</h2>
+      <h2 className="text-[22px] mt-10 font-bold">Children&quot;s Privacy</h2>
 
       <p className="text-[16px] mt-4 text-[#242424]">
         The Services are not directed at children under the age of 13. We do not
@@ -348,13 +348,13 @@ const Policy = () => {
       <p className="text-[16px] mt-4 text-[#242424]">
         We may update this Privacy Policy from time to time in order to reflect
         changes to our practices or for other operational, legal or regulatory
-        reasons. The updated version will be indicated by an updated "Effective
-        Date" at the top of this Privacy Policy. We encourage you to review this
-        Privacy Policy periodically to stay informed about how we are protecting
-        the Personal Information we collect. Your continued use of the Services
-        after the Effective Date constitutes your acceptance of the new Privacy
-        Policy. If you do not agree to the new Privacy Policy, please stop using
-        the Services.
+        reasons. The updated version will be indicated by an updated
+        &quot;Effective Date&quot; at the top of this Privacy Policy. We
+        encourage you to review this Privacy Policy periodically to stay
+        informed about how we are protecting the Personal Information we
+        collect. Your continued use of the Services after the Effective Date
+        constitutes your acceptance of the new Privacy Policy. If you do not
+        agree to the new Privacy Policy, please stop using the Services.
       </p>
       <h2 className="text-[22px] mt-8 font-bold">Contact Us </h2>
       <p className="text-[16px] mt-2 text-[#242424]">
