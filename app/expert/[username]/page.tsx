@@ -44,7 +44,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
     return null;
   }
   console.log(user);
-
+  // ss
   const getSocialMediaIcon = (link: string) => {
     if (link.includes("instagram.com")) {
       return "/images/social/instagram.svg";
