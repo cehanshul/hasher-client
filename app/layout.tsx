@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import Footer from "./widgets/Footer";
 import Navbar from "./widgets/Navbar";
+import { StoreProvieder } from "./store/StoreProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Hasher",
@@ -17,16 +18,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} flex flex-col min-h-screen`}>
-        <div className="fixed top-0 left-0 right-0 z-10">
-          <Navbar />
-        </div>
-        <main className="flex-grow flex flex-col justify-center items-center p-10 pt-20">
-          {children}
-        </main>
-        <Footer />
-      </body>
-    </html>
+    <StoreProvieder>
+      <html lang="en">
+        <body className={`${inter.className} flex flex-col min-h-screen`}>
+          <div className="fixed top-0 left-0 right-0 z-10">
+            <Navbar />
+          </div>
+          <main className="flex-gro flex flex-col justify-center items-center p-4 md:px-10 pt-20">
+            {children}
+          </main>
+          <Footer />
+        </body>
+      </html>
+    </StoreProvieder>
   );
 }
