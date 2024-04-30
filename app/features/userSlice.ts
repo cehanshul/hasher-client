@@ -80,7 +80,7 @@ export const fetchUserDetails = createAsyncThunk(
   "user/fetchUserDetails",
   async (username: string) => {
     const response = await axios.get(
-      `http://192.168.1.4:8003/api/users/username/${username}`
+      `https://api.hasher.lol/api/users/username/${username}`
     );
     console.log(`data from fetch user ${JSON.stringify(response.data)}`);
     return response.data.data;

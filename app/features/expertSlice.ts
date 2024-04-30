@@ -40,7 +40,7 @@ export const fetchExpertAnalytics = createAsyncThunk(
   "expert/fetchExpertAnalytics",
   async (expertId: string) => {
     const response = await axios.get(
-      `http://192.168.1.4:8003/reviews/expert/${expertId}`
+      `https://api.hasher.lol/reviews/expert/${expertId}`
     );
     console.log(
       `data from fetch expert stats ${JSON.stringify(response.data)}`
