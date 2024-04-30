@@ -127,17 +127,17 @@ const Expert = ({ params }: { params: { username: string } }) => {
         <div className="mt-8">
           <hr />
           <div className="flex justify-between px-8">
-            <div className="text-center py-4">
+            <div className="text-center py-2 md:py-4">
               <p className="text-xl font-semibold">{totalMeetings}</p>
               <p className="text-md text-[#A4A4A4]">Meetings</p>
             </div>
-            <div className="border border-[#ECEBE7] h-16 self-center w-[1px] mx-4"></div>
-            <div className="text-center py-4">
+            <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4"></div>
+            <div className="text-center py-2 md:py-4">
               <p className="text-xl font-semibold">{averageRating ?? 0}</p>
               <p className="text-md text-[#A4A4A4]">Rating</p>
             </div>
-            <div className="border border-[#ECEBE7] h-16 self-center w-[1px] mx-4"></div>
-            <div className="text-center py-4">
+            <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4"></div>
+            <div className="text-center py-2 md:py-4">
               <p className="text-xl font-semibold">{totalReviews}</p>
               <p className="text-md text-[#A4A4A4]">Reviews</p>
             </div>
@@ -154,6 +154,8 @@ const Expert = ({ params }: { params: { username: string } }) => {
             </div>
           ))}
         </div>
+
+        {reviews && reviews.length < 0 && <div className="mb-20"></div>}
 
         {reviews && reviews.length > 0 && (
           <>
