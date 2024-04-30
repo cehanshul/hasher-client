@@ -155,7 +155,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
           ))}
         </div>
 
-        {reviews && reviews.length < 0 && <div className="mb-20"></div>}
+        {reviews && reviews.length == 0 && <div className="mb-20"></div>}
 
         {reviews && reviews.length > 0 && (
           <>
