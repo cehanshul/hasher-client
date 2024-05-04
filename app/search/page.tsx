@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { fetchSearchResults } from "../features/searchSlice";
@@ -10,20 +10,21 @@ import Link from "next/link";
 
 const SearchPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const searchParams = useSearchParams();
-  const search = searchParams.get("query");
-  console.log(`logging from search result page ${search}`);
-
   const results = useSelector((state: RootState) => state.search.results);
 
-  useEffect(() => {
-    if (search) {
-      dispatch(fetchSearchResults(search as string));
-    }
-  }, [dispatch, search]);
+  // Wrap your searchParams inside a Suspense boundary
+  const SearchResults = () => {
+    const searchParams = useSearchParams();
+    const search = searchParams.get("query");
+    console.log(`logging from search result page ${search}`);
 
-  return (
-    <div className="max-w-7xl mx-auto mt-10">
+    useEffect(() => {
+      if (search) {
+        dispatch(fetchSearchResults(search as string));
+      }
+    }, [dispatch, search]);
+
+    return (
       <div className="flex gap-4">
         {results.map((user, index) => (
           <Link key={index} href={`/${user.username}`}>
@@ -45,6 +46,14 @@ const SearchPage = () => {
           </Link>
         ))}
       </div>
+    );
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto mt-10">
+      <Suspense fallback={<div>Loading...</div>}>
+        <SearchResults />
+      </Suspense>
     </div>
   );
 };
