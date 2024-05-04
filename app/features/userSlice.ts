@@ -1,6 +1,7 @@
 // redux/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import api from "../utils/api";
 
 interface AvailabilitySlot {
   _id: string;
@@ -79,9 +80,7 @@ const initialState: UserState = {
 export const fetchUserDetails = createAsyncThunk(
   "user/fetchUserDetails",
   async (username: string) => {
-    const response = await axios.get(
-      `https://api.hasher.lol/api/users/username/${username}`
-    );
+    const response = await api.get(`/api/users/username/${username}`);
     console.log(`data from fetch user ${JSON.stringify(response.data)}`);
     return response.data.data;
   }

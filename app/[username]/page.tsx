@@ -1,10 +1,11 @@
 "use client";
-import { fetchExpertAnalytics } from "@/app/features/expertSlice";
-import { fetchUserDetails } from "@/app/features/userSlice";
-import { AppDispatch, RootState } from "@/app/store/store";
+
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
+import { fetchUserDetails } from "../features/userSlice";
+import { fetchExpertAnalytics } from "../features/expertSlice";
 
 const Expert = ({ params }: { params: { username: string } }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -85,7 +86,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
     <>
       <div className="max-w-lg mx-auto mt-auto relative">
         <Image
-          className="rounded-[90px] h-[420] w-full object-cover"
+          className="rounded-[90px] h-[420px] w-full object-cover"
           alt="user profile"
           width={450}
           height={450}
@@ -93,7 +94,9 @@ const Expert = ({ params }: { params: { username: string } }) => {
         ></Image>
         <div className="flex justify-between mt-6">
           <div>
-            <h1 className="text-2xl font-semibold ">{user.name}</h1>
+            <h1 className="text-2xl font-semibold  overflow-hidden whitespace-nowrap overflow-ellipsis">
+              {user.name}
+            </h1>
           </div>
 
           <div className="flex gap-2">
@@ -120,10 +123,10 @@ const Expert = ({ params }: { params: { username: string } }) => {
             })}
           </div>
         </div>
-        <p className="text-lg font-regular -mt-3 text-[#A4A4A4]">
+        <p className="text-lg w-4/5 font-regular -mt-3 text-[#A4A4A4]  overflow-hidden whitespace-nowrap overflow-ellipsis">
           {user.expertId.profession}
         </p>
-        <p className="text-lg font-regular mt-2 text-[#A4A4A4]">{user.bio}</p>
+        <p className="text-lg font-regular mt-2 text-[#A4A4A4] ">{user.bio}</p>
         <div className="mt-8">
           <hr />
           <div className="flex justify-between px-8">

@@ -24,9 +24,7 @@ export default function RootLayout({
           <div className="fixed top-0 left-0 right-0 z-10">
             <Navbar />
           </div>
-          <main className="flex-gro flex flex-col justify-center items-center p-4 md:px-10 pt-20">
-            {children}
-          </main>
+          <main className=" p-4 md:px-10 pt-20">{children}</main>
           <Footer />
         </body>
       </html>

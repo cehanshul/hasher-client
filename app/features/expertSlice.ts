@@ -1,6 +1,7 @@
 // redux/expertSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import api from "../utils/api";
 
 interface Review {
   _id: string;
@@ -39,9 +40,7 @@ const initialState: ExpertState = {
 export const fetchExpertAnalytics = createAsyncThunk(
   "expert/fetchExpertAnalytics",
   async (expertId: string) => {
-    const response = await axios.get(
-      `https://api.hasher.lol/reviews/expert/${expertId}`
-    );
+    const response = await api.get(`/reviews/expert/${expertId}`);
     console.log(
       `data from fetch expert stats ${JSON.stringify(response.data)}`
     );

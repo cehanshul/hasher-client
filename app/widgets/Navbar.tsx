@@ -1,15 +1,142 @@
 "use client";
-
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { IoMdSearch } from "react-icons/io";
+import { searchUsers } from "../services/searchService";
+import { debounce } from "../utils/debounce";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { fetchSearchResults, setQuery } from "../features/searchSlice";
+import { AppDispatch } from "../store/store"; // Import the AppDispatch type
+export interface SearchResult {
+  _id: string;
+  isExpert: boolean;
+  isVerified: boolean;
+  name: string;
+  username: string;
+  profilePicture: string;
+  expertId: string;
+  expertiseAreas: string[];
+  pricePerMinute: number;
+  profession: string;
+}
 
 const Navbar = () => {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const debouncedSearch = useCallback(
+    debounce(async (value: string) => {
+      if (value.length > 2) {
+        const results = await searchUsers(value);
+        console.log(results);
+        setSearchResults(results);
+      } else {
+        setSearchResults([]);
+      }
+    }, 300),
+    []
+  );
+
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        searchRef.current &&
+        event.target instanceof Node &&
+        !searchRef.current.contains(event.target)
+      ) {
+        setSearchResults([]); // Close dropdown
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    console.log(value);
+    setSearchInput(value);
+    debouncedSearch(value);
+  };
+  // Part of navbar.tsx where the Enter key is handled
+  // Inside handleKeyDown in Navbar
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && searchInput.trim().length > 0) {
+      dispatch(setQuery(searchInput)); // Optional if you pass query in URL
+      router.push(`/search?query=${searchInput}`);
+      setSearchResults([]); // Clear local state
+      dispatch(fetchSearchResults(searchInput)); // Optional if SearchPage fetches on mount
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchResults([]);
+  };
+
   return (
-    <div className="w-full max-w-6xl py-4 px-4 md:py-6 mx-auto bg-white">
-      <Link href={"/"} className="text-2xl ">
-        <Image src={"/images/logo-s.png"} height={36} width={141} alt="logo" />
-      </Link>
+    <div className="w-full py-4 px-4 md:py-4 bg-white border-[#F2F2F2] border-b-[1px] z-50 fixed top-0 left-0 right-0">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <Link href={"/"}>
+          <Image
+            src={"/images/logo-s.png"}
+            height={36}
+            width={141}
+            alt="logo"
+          />
+        </Link>
+        <div className="flex-1 mx-4 relative" ref={searchRef}>
+          <input
+            type="text"
+            placeholder="Search Aliens"
+            className="w-full p-2 border border-gray-300 rounded-xl pl-10 focus:border-gray-600"
+            value={searchInput}
+            onChange={handleSearch}
+            onKeyDown={handleKeyDown}
+          />
+          <IoMdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-2xl text-gray-400" />
+          {searchResults.length > 0 && (
+            <div className="absolute bg-white border border-gray-300 roundexl mt-1 max-h-60 overflow-auto w-full">
+              {searchResults.map((result, index) => (
+                <Link
+                  href={`/${result.username}`}
+                  key={index}
+                  onClick={clearSearch}
+                >
+                  <div className="flex gap-3 px-4 py-2 cursor-pointer">
+                    <Image
+                      src={result.profilePicture}
+                      alt={result.name}
+                      height={40}
+                      width={40}
+                      className="h-[40px] w[40px] rounded-full object-cover"
+                    />
+                    <div>
+                      <p className="block hover:bg-gray-100">{result.name}</p>
+                      <p className="block hover:bg-gray-100 text-gray-400 text-sm">
+                        {result.profession}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+        <button className="bg-[#eeeeee] px-6 font-medium text-[#252525] py-2 rounded-full">
+          Download App
+        </button>
+        <Link href={"/signin"}>
+          <p className="text-[#252525] font-medium py-2 px-4 rounded">
+            Sign In
+          </p>
+        </Link>
+      </div>
     </div>
   );
 };
