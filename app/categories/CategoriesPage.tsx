@@ -39,8 +39,8 @@ const CategoriesPage = () => {
       <p className="text-2xl font-medium ">Choose a Category</p>
       <div className="flex self-start left-0 flex-row gap-4 mt-8 mb-20 overflow-x-auto">
         {categories.map((category) => (
-          <Link href={`/search?query=${category.name}`}>
-            <div key={category._id} className="flex   flex-col items-center">
+          <Link key={category._id} href={`/search?query=${category.name}`}>
+            <div className="flex   flex-col items-center">
               <Image
                 className="rounded-full h-[100px] object-cover w-[100px]"
                 height={100}
