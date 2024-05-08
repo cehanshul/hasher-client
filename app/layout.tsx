@@ -4,8 +4,10 @@ import "./globals.css";
 import Footer from "./widgets/Footer";
 import Navbar from "./widgets/Navbar";
 import { StoreProvieder } from "./store/StoreProvider";
-
+import { usePathname } from "next/navigation";
 const inter = Montserrat({ subsets: ["latin"] });
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
   title: "Hasher",
@@ -21,10 +23,19 @@ export default function RootLayout({
     <StoreProvieder>
       <html lang="en">
         <body className={`${inter.className} flex flex-col min-h-screen`}>
-          <div className="fixed top-0 left-0 right-0 z-10">
-            <Navbar />
-          </div>
-          <main className=" p-4 md:px-10 pt-20">{children}</main>
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+          <Navbar />
+          <main className=" px-4 md:px-10">{children}</main>
           <Footer />
         </body>
       </html>

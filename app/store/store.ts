@@ -1,14 +1,16 @@
 import { Action, ThunkAction, configureStore } from "@reduxjs/toolkit";
 import expertReducer from "../features/expertSlice";
-import userReducer from "../features/userSlice";
+import userReducer from "../features/user/userSlice";
 import categoriesReducer from "../features/categoriesSlice";
 import searchReducer from "../features/searchSlice";
+import authReducer from "../features/authSlice";
 const store = configureStore({
   reducer: {
     expert: expertReducer,
     user: userReducer,
     categories: categoriesReducer,
     search: searchReducer,
+    auth: authReducer,
   },
 });
 

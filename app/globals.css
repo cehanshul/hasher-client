@@ -40,3 +40,35 @@ body {
 .swiper-button-next {
   z-index: 10; /* Lower than the navbar's z-index */
 }
+select {
+  -webkit-appearance: none; /* For WebKit browsers */
+  -moz-appearance: none; /* For Mozilla browsers */
+  appearance: none; /* Standard syntax */
+}
+.react-datepicker__input-container {
+  position: unset !important;
+}
+.react-datepicker-wrapper {
+  width: 100%;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+/* styles/global.css */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
