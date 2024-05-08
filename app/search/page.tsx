@@ -1,6 +1,7 @@
 "use client";
-import React, { Suspense } from "react";
+
 import Image from "next/image";
+import React, { Suspense } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import Link from "next/link";
@@ -8,13 +9,12 @@ import SearchBar from "../components/SearchBar";
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchModal from "../components/SearchModel";
 
-const SearchPage = () => {
+const Search = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const search = searchParams.get("q");
 
-  // Render a fallback UI until searchParams are ready
-  const searchModal = (
+  return (
     <SearchModal
       isOpen={true}
       onClose={() => router.push("/")}
@@ -24,11 +24,16 @@ const SearchPage = () => {
       }
     />
   );
+};
+
+const SearchPage = () => {
+  const router = useRouter();
 
   return (
     <div>
-      {/* Wrap the part of your component that uses useSearchParams with Suspense */}
-      <Suspense fallback={<div>Loading...</div>}>{searchModal}</Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Search />
+      </Suspense>
     </div>
   );
 };
