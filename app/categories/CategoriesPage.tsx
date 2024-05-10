@@ -139,6 +139,20 @@ const CategoriesPage = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+          <div className="absolute hidden md:block top-[-10px] right-0 z-0 md:flex">
+            <button
+              className="bg-[#F3F3F3] border-[#C7C7C7] border-3 text-[#494949] p-3 rounded-full hover:bg-[#ededed] relative z-0"
+              onClick={() => swiperRefs.current[index]?.slidePrev()}
+            >
+              <FaChevronLeft className="text-[#494949]" />
+            </button>
+            <button
+              className="bg-[#F3F3F3] border-[#C7C7C7] border-3 text-[#494949] p-3 rounded-full hover:bg-[#ededed] ml-2 relative z-0"
+              onClick={() => swiperRefs.current[index]?.slideNext()}
+            >
+              <FaChevronRight className="text-[#494949]" />
+            </button>
+          </div>
         </div>
       ))}
     </div>

@@ -27,6 +27,7 @@ interface ExpertState {
     profilePicture: string;
     bio: string;
   };
+  profession: string;
   reviews: Review[];
   totalReviews: number;
   averageRating: string | null;
@@ -100,6 +101,7 @@ interface APIResponse {
 const initialState: ExpertState = {
   expertProfile: undefined,
   expertUser: undefined,
+  profession: "",
   reviews: [],
   totalReviews: 0,
   averageRating: null,

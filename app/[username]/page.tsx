@@ -59,7 +59,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
 
   const fetchAvailableSlots = async (date: Date) => {
     try {
-      const expertId = expertProfile?._id;
+      const expertId = expertProfile?.expertId?._id;
       const userId = user?._id;
       const formattedDate = date.toISOString().split("T")[0];
 
@@ -310,7 +310,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
             </div>
 
             <div className="flex gap-2">
-              {expertProfile.socialMedia?.map((link, index) => {
+              {expertProfile.expertId.socialMedia?.map((link, index) => {
                 const icon = getSocialMediaIcon(link);
 
                 return (
@@ -334,8 +334,12 @@ const Expert = ({ params }: { params: { username: string } }) => {
             </div>
           </div>
 
-          <p className="text-lg w-4/5 font-regular -mt-3 text-[#A4A4A4] overflow-hidden whitespace-nowrap overflow-ellipsis">
-            {loading ? <Skeleton width={150} /> : expertProfile.profession}{" "}
+          <p className="text-lg w-4/5 -mt-3 font-regular  text-[#A4A4A4] overflow-hidden whitespace-nowrap overflow-ellipsis">
+            {loading ? (
+              <Skeleton width={150} />
+            ) : (
+              expertProfile.expertId.profession
+            )}{" "}
           </p>
           <p className="text-lg font-regular mt-2 text-[#A4A4A4]">
             {loading ? <Skeleton count={2} /> : expertUser.bio}
