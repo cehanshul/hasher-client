@@ -196,7 +196,7 @@ const Navbar = () => {
                 ) : (
                   <button
                     onClick={handleSignInClick}
-                    className="text-[#252525] font-medium py-2 px-4 rounded"
+                    className="text-[#252525] text-lg font-medium py-2 px-4 rounded"
                   >
                     Sign In
                   </button>

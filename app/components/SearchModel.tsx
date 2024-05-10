@@ -61,7 +61,7 @@ const SearchModal: React.FC<SearchModalProps> = ({
       className="fixed inset-0 z-50 overflow-auto bg-white"
     >
       <div className="max-w-7xl mx-auto mt-4">
-        <div className="flex items-center w-full justify-between mb-8">
+        <div className="flex items-center px-4 w-full justify-between mb-8">
           <div className="flex w-full items-center">
             <IoMdClose
               className="text-4xl mr-4 text-gray-400 cursor-pointer"

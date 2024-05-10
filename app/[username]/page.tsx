@@ -4,22 +4,20 @@ import Image from "next/image";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import {
-  fetchExpertAnalytics,
-  fetchExpertByUsername,
-} from "../features/expertSlice";
+import { fetchExpertData } from "../features/expertSlice";
 import { FiArrowRight } from "react-icons/fi";
 import { RxCross1 } from "react-icons/rx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import api from "../utils/api";
-import { BookingRequest } from "../types/bookingsTypes";
-import { OrderRequest } from "../types/paymentTypes";
 import { bookSession } from "../features/bookingsSlice";
 import { createOrder, verifyPayment } from "../features/paymentSlice";
 import moment from "moment-timezone";
 import Modal from "../components/Modal";
 import LoginForm from "../components/LoginForm";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 declare global {
   interface Window {
     Razorpay: any;
@@ -31,13 +29,12 @@ const Expert = ({ params }: { params: { username: string } }) => {
   const {
     expertProfile,
     expertUser,
-    expertName,
     reviews,
     totalReviews,
     averageRating,
     totalMeetings,
-    loading: reviewsLoading,
-    error: reviewsError,
+    loading,
+    error,
   } = useSelector((state: RootState) => state.expert);
   const [message, setMessage] = useState<string>("");
   const [duration, setDuration] = useState<number>(15);
@@ -45,6 +42,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [showCheckoutDetails, setShowCheckoutDetails] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target.value.length <= 200) {
       setMessage(event.target.value);
@@ -54,9 +52,11 @@ const Expert = ({ params }: { params: { username: string } }) => {
   const [availableSlots, setAvailableSlots] = useState<
     { startTime: string; endTime: string; _id: string }[]
   >([]);
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
   const fetchAvailableSlots = async (date: Date) => {
     try {
       const expertId = expertProfile?._id;
@@ -71,6 +71,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
       console.error("Failed to fetch available slots:", error);
     }
   };
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -83,6 +84,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
       }
     };
   }, []);
+
   useEffect(() => {
     fetchAvailableSlots(startDate);
   }, [startDate]);
@@ -102,21 +104,11 @@ const Expert = ({ params }: { params: { username: string } }) => {
   } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    dispatch(fetchExpertByUsername(params.username));
+    dispatch(fetchExpertData(params.username));
   }, [dispatch, params.username]);
 
-  useEffect(() => {
-    if (expertProfile) {
-      dispatch(fetchExpertAnalytics(expertProfile._id));
-    }
-  }, [dispatch, expertProfile]);
-
-  if (reviewsLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (reviewsError) {
-    return <div>Error: {reviewsError}</div>;
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   if (!expertProfile || !expertUser) {
@@ -204,6 +196,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
   const hideCheckoutDetailsSection = () => {
     setShowCheckoutDetails(false);
   };
+
   const calculateEndTime = (startTime: string, duration: number) => {
     const [hours, minutes] = startTime.split(":");
     const endTime = new Date();
@@ -215,6 +208,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
       hour12: false,
     });
   };
+
   const handleBooking = async () => {
     try {
       if (selectedTimeSlot) {
@@ -291,33 +285,26 @@ const Expert = ({ params }: { params: { username: string } }) => {
     }
   };
 
-  // Helper function to format the time zone offset
-  const formatTimeZoneOffset = (offset: number) => {
-    const sign = offset >= 0 ? "+" : "-";
-    const hours = Math.abs(Math.floor(offset / 60))
-      .toString()
-      .padStart(2, "0");
-    const minutes = Math.abs(offset % 60)
-      .toString()
-      .padStart(2, "0");
-    return `${sign}${hours}:${minutes}`;
-  };
   return (
     <div className="max-w-lg mx-auto mt-auto relative pt-28">
       {!showCheckoutDetails && (
         <div>
-          <Image
-            className="rounded-[90px] h-[420px] w-full object-cover"
-            alt="user profile"
-            width={450}
-            height={450}
-            src={expertUser.profilePicture}
-          ></Image>
+          {loading ? (
+            <Skeleton className="rounded-[90px] h-[420px] w-full " />
+          ) : (
+            <Image
+              className="rounded-[90px] h-[420px] w-full object-cover"
+              alt="user profile"
+              width={450}
+              height={450}
+              src={expertUser.profilePicture}
+            />
+          )}
           <div className="flex justify-between mt-6">
             <div>
               <div className="flex gap-2">
                 <h1 className="text-2xl font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  {expertName}
+                  {expertUser.name}
                 </h1>
               </div>
             </div>
@@ -348,47 +335,67 @@ const Expert = ({ params }: { params: { username: string } }) => {
           </div>
 
           <p className="text-lg w-4/5 font-regular -mt-3 text-[#A4A4A4] overflow-hidden whitespace-nowrap overflow-ellipsis">
-            {expertProfile.profession}{" "}
+            {loading ? <Skeleton width={150} /> : expertProfile.profession}{" "}
           </p>
           <p className="text-lg font-regular mt-2 text-[#A4A4A4]">
-            {expertUser.bio}
+            {loading ? <Skeleton count={2} /> : expertUser.bio}
           </p>
+
           <div className="mt-8">
             <hr />
             <div className="flex justify-between px-8">
               <div className="text-center py-2 md:py-4">
-                <p className="text-xl font-semibold">{totalMeetings}</p>
+                <p className="text-xl font-semibold">
+                  {loading || totalMeetings === null ? (
+                    <Skeleton width={50} />
+                  ) : (
+                    totalMeetings || 0
+                  )}
+                </p>
                 <p className="text-md text-[#A4A4A4]">Meetings</p>
               </div>
-              <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4"></div>
+              <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4" />
               <div className="text-center py-2 md:py-4">
-                <p className="text-xl font-semibold">{averageRating ?? 0}</p>
+                <p className="text-xl font-semibold">
+                  {loading ? <Skeleton width={50} /> : averageRating ?? 0}
+                </p>
                 <p className="text-md text-[#A4A4A4]">Rating</p>
               </div>
-              <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4"></div>
+              <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4" />
               <div className="text-center py-2 md:py-4">
-                <p className="text-xl font-semibold">{totalReviews}</p>
+                <p className="text-xl font-semibold">
+                  {loading || totalReviews === null ? (
+                    <Skeleton width={50} />
+                  ) : (
+                    totalReviews || 0
+                  )}
+                </p>
                 <p className="text-md text-[#A4A4A4]">Reviews</p>
               </div>
             </div>
             <hr />
           </div>
-          <div className="">
+
+          <div>
             <p className="text-xl mt-8 mb-6 font-medium border-b-4 w-6 center">
               Expertise
             </p>
-            {expertProfile.expertiseAreas &&
-              expertProfile.expertiseAreas.map((expertise, index) => (
+            {loading ? (
+              <Skeleton count={3} className="h-12 mt-2" />
+            ) : (
+              expertProfile.expertId.expertiseAreas &&
+              expertProfile.expertId.expertiseAreas.map((expertise, index) => (
                 <div
                   key={index}
                   className="bg-[#ECEBE7] mt-2 py-2 pl-4 rounded-xl"
                 >
                   <p className="text-[#484848] font-medium">{expertise}</p>
                 </div>
-              ))}
+              ))
+            )}
           </div>
 
-          {reviews && reviews.length === 0 && <div className="mb-32"></div>}
+          {reviews && reviews.length === 0 && <div className="mb-32" />}
 
           {reviews && reviews.length > 0 && (
             <>
@@ -412,11 +419,10 @@ const Expert = ({ params }: { params: { username: string } }) => {
                   </div>
                 </div>
               ))}
-              <div className="mb-30"></div>
+              <div className="mb-30" />
             </>
           )}
-          {reviews && reviews.length > 0 && <div className="mb-32"></div>}
-          {/** open checkout button */}
+          {reviews && reviews.length > 0 && <div className="mb-32" />}
           <div className="fixed bottom-4 w-full left-0 right-0 mx-auto">
             <div className="absolute bottom-4 w-full px-4">
               <div
@@ -437,7 +443,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
                   </div>
                 </div>
                 <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
-                  ₹{expertProfile.pricePerMinute * duration}
+                  ₹{expertProfile.expertId.pricePerMinute * duration}
                   <span>
                     <FiArrowRight size={24} className="font-bold" />
                   </span>
@@ -447,16 +453,15 @@ const Expert = ({ params }: { params: { username: string } }) => {
           </div>
         </div>
       )}
-
       {showCheckoutDetails && (
         <div>
           <div className="flex justify-between items-center mb-4">
-            {/* <h2 className="text-xl font-semibold">Checkout Details</h2> */}
-            <div> </div>
+            <div />
             <button onClick={hideCheckoutDetailsSection}>
               <RxCross1 size={24} />
             </button>
           </div>
+
           <div>
             <p className="mt-4">MESSAGE</p>
             <textarea
@@ -468,8 +473,8 @@ const Expert = ({ params }: { params: { username: string } }) => {
               style={{ width: "100%" }}
             />
           </div>
-          <p className="mt-4">DURATION</p>
 
+          <p className="mt-4">DURATION</p>
           <div className="flex gap-8 mt-4">
             <Image
               className="cursor-pointer"
@@ -497,6 +502,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
             minDate={new Date()}
             className="bg-[#EEEEEE] p-4 rounded-3xl mt-3 focus:border-none w-full"
           />
+
           <p className="mt-6">TIME SLOTS</p>
           <div className="grid grid-cols-4 md:grid-cols-6 mb-36 gap-2">
             {availableSlots.map((slot) => {
@@ -523,15 +529,12 @@ const Expert = ({ params }: { params: { username: string } }) => {
               ));
             })}
           </div>
-          {/** booking button */}
+
           <div className="fixed bottom-4 w-full left-0 right-0 mx-auto">
             <div className="absolute bottom-4 w-full px-4">
               <div
                 className="text-center items-center justify-between flex gap-2 hover:cursor-pointer rounded-full bg-[#252525] px-4 py-2 text-[#5F5F5F] max-w-lg mx-auto"
-                onClick={
-                  // booking
-                  handleBooking
-                }
+                onClick={handleBooking}
               >
                 <div className="flex gap-2">
                   <Image
@@ -547,7 +550,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
                   </div>
                 </div>
                 <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
-                  ₹{expertProfile.pricePerMinute * duration}
+                  ₹{expertProfile.expertId.pricePerMinute * duration}
                   <span>
                     <FiArrowRight size={24} className="font-bold" />
                   </span>

@@ -12,8 +12,19 @@ import { ToastContainer } from "react-toastify";
 export const metadata: Metadata = {
   title: "Hasher",
   description: "Learn from the best",
+  openGraph: {
+    title: "Hasher",
+    description: "Connect with experts and learn new skills",
+    images: [
+      {
+        url: "https://example.com/default-image.jpg",
+        width: 1200,
+        height: 600,
+        alt: "Hasher Platform",
+      },
+    ],
+  },
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{

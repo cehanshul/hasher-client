@@ -35,7 +35,6 @@ body {
 .swiper-button-prev {
   display: none;
 }
-/* Adjusting z-index for swiper navigation buttons */
 .swiper-button-prev,
 .swiper-button-next {
   z-index: 10; /* Lower than the navbar's z-index */
@@ -71,4 +70,26 @@ select {
   width: 16px;
   height: 16px;
   animation: spin 1s linear infinite;
+}
+.swiper {
+  margin-left: 2px !important;
+  margin-right: 2px !important;
+}
+/* .category-swiper {
+  padding: 20px 0;
+} */
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.category-name {
+  margin-top: 10px;
+  font-size: 16px; /* Adjust font size as needed */
+}
+.custom-rounded-skeleton {
+  border-radius: 90px; /* This directly sets the border-radius */
 }
