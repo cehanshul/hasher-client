@@ -18,8 +18,7 @@ const initialState: SearchState = {
   error: null,
 };
 
-// Asynchronous thunk action
-import { AxiosError } from "axios"; // Import AxiosError
+import { AxiosError } from "axios";
 
 export const fetchSearchResults = createAsyncThunk(
   "search/fetchResults",

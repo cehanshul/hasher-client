@@ -17,6 +17,8 @@ import Modal from "../components/Modal";
 import LoginForm from "../components/LoginForm";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Link from "next/link";
+import { ClipLoader } from "react-spinners";
 
 declare global {
   interface Window {
@@ -38,10 +40,12 @@ const Expert = ({ params }: { params: { username: string } }) => {
   } = useSelector((state: RootState) => state.expert);
   const [message, setMessage] = useState<string>("");
   const [duration, setDuration] = useState<number>(15);
-  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [showCheckoutDetails, setShowCheckoutDetails] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [slotsLoading, setSlotsLoading] = useState(false);
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target.value.length <= 200) {
@@ -59,16 +63,23 @@ const Expert = ({ params }: { params: { username: string } }) => {
 
   const fetchAvailableSlots = async (date: Date) => {
     try {
+      setSlotsLoading(true); // Start loading
       const expertId = expertProfile?.expertId?._id;
       const userId = user?._id;
-      const formattedDate = date.toISOString().split("T")[0];
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const localDate = moment(date).tz(userTimeZone);
+      const formattedDateWithTimezone = localDate.format(
+        "YYYY-MM-DDTHH:mm:ssZ"
+      );
 
       const response = await api.get(
-        `/api/users/expert/availability/${expertId}/${userId}/${formattedDate}`
+        `/api/users/expert/availability/${expertId}/${userId}/${formattedDateWithTimezone}`
       );
       setAvailableSlots(response.data.availability.slots);
+      setSlotsLoading(false); // Stop loading
     } catch (error) {
       console.error("Failed to fetch available slots:", error);
+      setSlotsLoading(false); // Stop loading on error
     }
   };
 
@@ -86,7 +97,9 @@ const Expert = ({ params }: { params: { username: string } }) => {
   }, []);
 
   useEffect(() => {
-    fetchAvailableSlots(startDate);
+    if (startDate !== null) {
+      fetchAvailableSlots(startDate);
+    }
   }, [startDate]);
 
   const incrementDuration = () => {
@@ -210,6 +223,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
   };
 
   const handleBooking = async () => {
+    setBookingLoading(true);
     try {
       if (selectedTimeSlot) {
         // Detect the user's local time zone
@@ -228,12 +242,12 @@ const Expert = ({ params }: { params: { username: string } }) => {
         // Prepare the booking data
         const bookingData = {
           userId: user?._id ?? "",
-          expertId: expertProfile?._id ?? "",
+          expertId: expertProfile.expertId?._id ?? "",
           startTime: startTime.format(),
           endTime: endTime.format(),
           sessionType: "video",
-          ratePerMinute: expertProfile?.pricePerMinute ?? 0,
-          totalCost: (expertProfile?.pricePerMinute ?? 0) * duration,
+          ratePerMinute: expertProfile.expertId?.pricePerMinute ?? 0,
+          totalCost: (expertProfile.expertId?.pricePerMinute ?? 0) * duration,
           confirmationStatus: "pending",
         };
 
@@ -244,9 +258,11 @@ const Expert = ({ params }: { params: { username: string } }) => {
 
         // Prepare the order data
         const orderData = {
-          amount: ((expertProfile?.pricePerMinute ?? 0) * duration).toString(),
+          amount: (
+            (expertProfile.expertId?.pricePerMinute ?? 0) * duration
+          ).toString(),
           sessionId: bookingResponse._id,
-          expertId: expertProfile?._id ?? "",
+          expertId: expertProfile.expertId?._id ?? "",
           currency: "INR",
         };
 
@@ -283,17 +299,18 @@ const Expert = ({ params }: { params: { username: string } }) => {
     } catch (error) {
       console.error("Error during booking and payment:", error);
     }
+    setBookingLoading(false);
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-auto relative pt-28">
+    <div className="max-w-lg mx-auto mt-auto relative pt-24 md:pt-28">
       {!showCheckoutDetails && (
         <div>
           {loading ? (
             <Skeleton className="rounded-[90px] h-[420px] w-full " />
           ) : (
             <Image
-              className="rounded-[90px] h-[420px] w-full object-cover"
+              className="rounded-[90px] h-[360px] md:h-[420px] w-full object-cover"
               alt="user profile"
               width={450}
               height={450}
@@ -304,7 +321,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
             <div>
               <div className="flex gap-2">
                 <h1 className="text-2xl font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  {expertUser.name}
+                  {loading ? <Skeleton count={1} /> : expertUser.name}
                 </h1>
               </div>
             </div>
@@ -314,9 +331,9 @@ const Expert = ({ params }: { params: { username: string } }) => {
                 const icon = getSocialMediaIcon(link);
 
                 return (
-                  <a
+                  <Link
                     key={index}
-                    href={link}
+                    href={`https://${link}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -328,7 +345,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
                         width={20}
                       />
                     </div>
-                  </a>
+                  </Link>
                 );
               })}
             </div>
@@ -504,36 +521,54 @@ const Expert = ({ params }: { params: { username: string } }) => {
             selected={startDate}
             onChange={(date: Date) => setStartDate(date)}
             minDate={new Date()}
+            placeholderText="DD-MM-YYYY"
             className="bg-[#EEEEEE] p-4 rounded-3xl mt-3 focus:border-none w-full"
           />
 
           <p className="mt-6">TIME SLOTS</p>
           <div className="grid grid-cols-4 md:grid-cols-6 mb-36 gap-2">
-            {availableSlots.map((slot) => {
-              const localStartTime = convertToLocalTime(slot.startTime);
-              const localEndTime = convertToLocalTime(slot.endTime);
-              const timeSlots = generateTimeSlots(
-                localStartTime,
-                localEndTime,
-                duration
-              );
+            {slotsLoading ? (
+              <div className="col-span-full text-center">
+                <ClipLoader color="#252525" size={24} />
+              </div>
+            ) : availableSlots.length > 0 ? (
+              availableSlots.map((slot) => {
+                const localStartTime = convertToLocalTime(slot.startTime);
+                const localEndTime = convertToLocalTime(slot.endTime);
+                const timeSlots = generateTimeSlots(
+                  localStartTime,
+                  localEndTime,
+                  duration
+                );
 
-              return timeSlots.map((timeSlot, index) => (
-                <p
-                  key={`${slot._id}-${index}`}
-                  className={`py-2 px-4 border-[1px] mt-4 rounded-lg w-fit ${
-                    selectedTimeSlot === timeSlot
-                      ? "bg-[#EAEAEA]"
-                      : "border-[#EAEAEA]"
-                  }`}
-                  onClick={() => handleTimeSlotSelection(timeSlot)}
-                >
-                  {timeSlot}
-                </p>
-              ));
-            })}
+                return timeSlots.length > 0 ? (
+                  timeSlots.map((timeSlot, index) => (
+                    <p
+                      key={`${slot._id}-${index}`}
+                      className={`py-2 px-4 border-[1px] mt-4 rounded-lg w-fit ${
+                        selectedTimeSlot === timeSlot
+                          ? "bg-[#EAEAEA]"
+                          : "border-[#EAEAEA]"
+                      }`}
+                      onClick={() => handleTimeSlotSelection(timeSlot)}
+                    >
+                      {timeSlot}
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-center pt-16 col-span-full">
+                    No time slots available
+                  </p>
+                );
+              })
+            ) : (
+              <p className="text-center pt-16 col-span-full">
+                No time slots available
+              </p>
+            )}
           </div>
 
+          {/* booking button */}
           <div className="fixed bottom-4 w-full left-0 right-0 mx-auto">
             <div className="absolute bottom-4 w-full px-4">
               <div
@@ -554,10 +589,16 @@ const Expert = ({ params }: { params: { username: string } }) => {
                   </div>
                 </div>
                 <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
-                  ₹{expertProfile.expertId.pricePerMinute * duration}
-                  <span>
-                    <FiArrowRight size={24} className="font-bold" />
-                  </span>
+                  {bookingLoading ? (
+                    <ClipLoader color="#ff252525" size={24} />
+                  ) : (
+                    <span className="flex gap-1 items-center">
+                      ₹{expertProfile.expertId.pricePerMinute * duration}
+                      <span>
+                        <FiArrowRight size={24} className="font-bold" />
+                      </span>
+                    </span>
+                  )}
                 </p>
               </div>
             </div>

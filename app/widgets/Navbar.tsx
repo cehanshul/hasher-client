@@ -8,11 +8,16 @@ import { debounce } from "../utils/debounce";
 import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSearchResults, setQuery } from "../features/searchSlice";
-import { AppDispatch } from "../store/store"; // Import the AppDispatch type
+import { AppDispatch } from "../store/store";
 import Modal from "../components/Modal";
 import LoginForm from "../components/LoginForm";
-import { fetchUserDetails, selectUserState } from "../features/user/userSlice";
+import {
+  fetchUserDetails,
+  selectUserState,
+  logout,
+} from "../features/user/userSlice";
 import SearchModal from "../components/SearchModel";
+
 export interface SearchResult {
   _id: string;
   isExpert: boolean;
@@ -26,20 +31,22 @@ export interface SearchResult {
   profession: string;
 }
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const [searchInput, setSearchInput] = useState<string>("");
+  const [searchInput, setSearchInput] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const { user } = useSelector(selectUserState);
   const [isSearchModalOpen, setSearchModalOpen] = useState(false);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   const debouncedSearch = useCallback(
     debounce(async (value: string) => {
-      if (value.length > 2) {
+      if (value.trim().length > 2) {
         const results = await searchUsers(value);
-        console.log(results);
         setSearchResults(results);
       } else {
         setSearchResults([]);
@@ -64,25 +71,26 @@ const Navbar = () => {
     setModalOpen(false);
   };
 
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        searchRef.current &&
-        event.target instanceof Node &&
-        !searchRef.current.contains(event.target)
-      ) {
-        setSearchResults([]);
-      }
-    };
+  const handleOutsideClick = useCallback((event: MouseEvent) => {
+    if (
+      searchRef.current &&
+      event.target instanceof Node &&
+      !searchRef.current.contains(event.target) &&
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setSearchResults([]);
+      setDropdownOpen(false);
+    }
+  }, []);
 
+  useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, []);
-  // const handleSearchClick = () => {
-  //   router.push("/search");
-  // };
+  }, [handleOutsideClick]);
+
   const handleSearchClick = () => {
     setSearchModalOpen(true);
   };
@@ -90,25 +98,35 @@ const Navbar = () => {
   const handleCloseSearchModal = () => {
     setSearchModalOpen(false);
   };
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    console.log(value);
     setSearchInput(value);
     debouncedSearch(value);
   };
-  // Part of navbar.tsx where the Enter key is handled
-  // Inside handleKeyDown in Navbar
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && searchInput.trim().length > 0) {
-      dispatch(setQuery(searchInput)); // Optional if you pass query in URL
+      dispatch(setQuery(searchInput));
       router.push(`/search?query=${searchInput}`);
-      setSearchResults([]); // Clear local state
-      dispatch(fetchSearchResults(searchInput)); // Optional if SearchPage fetches on mount
+      setSearchResults([]);
+      dispatch(fetchSearchResults(searchInput));
     }
   };
 
   const clearSearch = () => {
     setSearchResults([]);
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem("userData");
+    setDropdownOpen(false);
+    window.location.reload();
   };
   const pathname = usePathname();
 
@@ -118,9 +136,9 @@ const Navbar = () => {
         <div className="fixed top-0 left-0 right-0 z-10">
           <div className="w-full py-4 px-4 md:py-4 bg-white border-[#F2F2F2] border-b-[1px] z-50 fixed top-0 left-0 right-0">
             <div className="max-w-7xl mx-auto flex justify-between items-center">
-              <Link href={"/"}>
+              <Link href="/">
                 <Image
-                  src={"/images/logo-s.png"}
+                  src="/images/logo-s.png"
                   height={36}
                   width={141}
                   alt="logo"
@@ -138,16 +156,14 @@ const Navbar = () => {
                   className="w-full p-2 border border-gray-300 rounded-xl pl-10 focus:border-gray-600"
                   value={searchInput}
                   readOnly
-                  // onChange={handleSearch}
-                  // onKeyDown={handleKeyDown}
                 />
                 <IoMdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-2xl text-gray-400" />
                 {searchResults.length > 0 && (
                   <div className="absolute bg-white border border-gray-300 roundexl mt-1 max-h-60 overflow-auto w-full">
-                    {searchResults.map((result, index) => (
+                    {searchResults.map((result) => (
                       <Link
                         href={`/${result.username}`}
-                        key={index}
+                        key={result._id}
                         onClick={clearSearch}
                       >
                         <div className="flex gap-3 px-4 py-2 cursor-pointer">
@@ -172,16 +188,22 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
+
               <button className="bg-[#eeeeee] hidden md:block px-6 font-medium text-[#252525] py-2 rounded-full">
                 Download App
               </button>
+
               <div className="flex justify-center">
                 <IoMdSearch
-                  className=" block md:hidden self-center text-2xl text-gray-400"
+                  className="block md:hidden self-center text-2xl text-gray-400"
                   onClick={handleSearchClick}
                 />
                 {user ? (
-                  <div className="flex gap-2 pl-4">
+                  <div
+                    className="flex gap-2 pl-4 relative"
+                    onClick={toggleDropdown}
+                    ref={dropdownRef}
+                  >
                     <Image
                       className="my-auto justify-center"
                       src="/images/icons/user.svg"
@@ -189,9 +211,21 @@ const Navbar = () => {
                       height={22}
                       width={22}
                     />
-                    <p className="text-[#252525] hidden md:flex font-medium py-2  rounded">
-                      {user.name}
-                    </p>
+                    <div className="relative">
+                      <p className="text-[#252525] hidden md:flex font-medium py-2 rounded cursor-pointer">
+                        {user.name}
+                      </p>
+                      {isDropdownOpen && (
+                        <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
+                          <button
+                            onClick={handleLogout}
+                            className="block px-4 w-full py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <button
@@ -203,12 +237,14 @@ const Navbar = () => {
                 )}
               </div>
             </div>
+
             <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
               <LoginForm onLoginSuccess={handleCloseModal} />
             </Modal>
           </div>
         </div>
       )}
+
       <SearchModal
         isOpen={isSearchModalOpen}
         onClose={handleCloseSearchModal}
@@ -220,8 +256,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-{
-  /* <p className="text-[#252525] font-medium py-2  rounded">
-                      {user.name}
-                    </p> */
-}

@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import api from "../utils/api";
 
-interface Category {
+export interface Category {
   _id: string;
   name: string;
   imageUrl: string;
