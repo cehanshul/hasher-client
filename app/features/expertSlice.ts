@@ -26,6 +26,7 @@ interface ExpertState {
     name: string;
     profilePicture: string;
     bio: string;
+    isVerified: boolean;
   };
   profession: string;
   reviews: Review[];
@@ -63,6 +64,7 @@ interface ExpertProfile {
   name: string;
   username: string;
   bio: string;
+  isVerified: boolean;
   profilePicture: string;
   expertId: ExpertDetails;
   wallet: string;
@@ -146,6 +148,7 @@ const expertSlice = createSlice({
             name: action.payload.expert.name,
             profilePicture: action.payload.expert.profilePicture,
             bio: action.payload.expert.bio,
+            isVerified: action.payload.expert.isVerified,
           };
         }
       )

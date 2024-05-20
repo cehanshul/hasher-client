@@ -323,6 +323,15 @@ const Expert = ({ params }: { params: { username: string } }) => {
                 <h1 className="text-2xl font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis">
                   {loading ? <Skeleton count={1} /> : expertUser.name}
                 </h1>
+                {expertProfile.isVerified == true && (
+                  <Image
+                    className="my-auto justify-center"
+                    src="/images/icons/verified.svg"
+                    alt="user"
+                    height={18}
+                    width={18}
+                  />
+                )}
               </div>
             </div>
 

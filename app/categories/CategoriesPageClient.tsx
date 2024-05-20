@@ -22,7 +22,6 @@ const CategoriesPageClient: React.FC = () => {
     (state: RootState) => state.categories
   );
   const swiperRefs = useRef<(SwiperClass | null)[]>([]);
-
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
@@ -102,13 +101,15 @@ const CategoriesPageClient: React.FC = () => {
                       <p className="text-lg overflow-hidden whitespace-nowrap overflow-ellipsis">
                         {expert.userId.name}
                       </p>
-                      <Image
-                        className="my-auto justify-center"
-                        src="/images/icons/verified.svg"
-                        alt="user"
-                        height={18}
-                        width={18}
-                      />
+                      {expert.userId.isVerified == true && (
+                        <Image
+                          className="my-auto justify-center"
+                          src="/images/icons/verified.svg"
+                          alt="user"
+                          height={18}
+                          width={18}
+                        />
+                      )}
                     </div>
                     <p className="text-[#acacac] text-sm font-normal overflow-hidden whitespace-nowrap overflow-ellipsis">
                       {expert.profession}

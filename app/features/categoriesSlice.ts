@@ -41,6 +41,7 @@ export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async () => {
     const response = await api.get<Category[]>("/categories/");
+    console.log(`response of categories ${JSON.stringify(response)}`);
     return response.data;
   }
 );
