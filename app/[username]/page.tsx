@@ -356,7 +356,7 @@ const Expert = ({ params }: { params: { username: string } }) => {
                     </div>
                   </Link>
                 );
-              })}
+              }) ?? null}
             </div>
           </div>
 
