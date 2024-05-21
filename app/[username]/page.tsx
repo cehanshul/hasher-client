@@ -71,7 +71,9 @@ const Expert = ({ params }: { params: { username: string } }) => {
       const formattedDateWithTimezone = localDate.format(
         "YYYY-MM-DDTHH:mm:ssZ"
       );
-
+      console.log(
+        `expert id is ${expertId} user id is ${userId} and formatted date is ${formattedDateWithTimezone}`
+      );
       const response = await api.get(
         `/api/users/expert/availability/${expertId}/${userId}/${formattedDateWithTimezone}`
       );
@@ -337,26 +339,29 @@ const Expert = ({ params }: { params: { username: string } }) => {
 
             <div className="flex gap-2">
               {expertProfile.expertId.socialMedia?.map((link, index) => {
-                const icon = getSocialMediaIcon(link);
+                if (link.trim() !== "") {
+                  const icon = getSocialMediaIcon(link);
 
-                return (
-                  <Link
-                    key={index}
-                    href={`https://${link}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div className="bg-[#ECEBE7] text-green-500 rounded-full p-2.5">
-                      <Image
-                        alt="social media logo"
-                        src={icon}
-                        height={20}
-                        width={20}
-                      />
-                    </div>
-                  </Link>
-                );
-              }) ?? null}
+                  return (
+                    <Link
+                      key={index}
+                      href={`https://${link}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="bg-[#ECEBE7] text-green-500 rounded-full p-2.5">
+                        <Image
+                          alt="social media logo"
+                          src={icon}
+                          height={20}
+                          width={20}
+                        />
+                      </div>
+                    </Link>
+                  );
+                }
+                return null;
+              })}
             </div>
           </div>
 
