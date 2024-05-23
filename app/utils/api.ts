@@ -33,6 +33,6 @@ export const fetchExpertDataBackend = async (
 ): Promise<any> => {
   console.log("Username received in fetchExpertDataBackend:", username);
   const response = await api.get(`/api/users/${username}`);
-  console.log(`Data from API: ${JSON.stringify(response.data)}`);
+  // console.log(`Data from API: ${JSON.stringify(response.data)}`);
   return response.data;
 };

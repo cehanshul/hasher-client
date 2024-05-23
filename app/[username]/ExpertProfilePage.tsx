@@ -97,7 +97,7 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
   const fetchAvailableSlots = async (date: Date) => {
     try {
       setSlotsLoading(true); // Start loading
-      const expertId = expertProfile?.expertId?._id;
+      const expertId = expertProfile?._id;
       const userId = user?._id;
       const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const localDate = moment(date).tz(userTimeZone);
@@ -136,6 +136,8 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
       fetchAvailableSlots(startDate);
     }
   }, [startDate]);
+  console.log("Expert Profile Data: ", expertProfile);
+  console.log("Expertise Areas: ", expertProfile?.expertiseAreas);
 
   const incrementDuration = () => {
     setDuration((prev) => (prev < 90 ? prev + 15 : prev));
@@ -277,12 +279,12 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
         // Prepare the booking data
         const bookingData = {
           userId: user?._id ?? "",
-          expertId: expertProfile.expertId?._id ?? "",
+          expertId: expertProfile?._id ?? "",
           startTime: startTime.format(),
           endTime: endTime.format(),
           sessionType: "video",
-          ratePerMinute: expertProfile.expertId?.pricePerMinute ?? 0,
-          totalCost: (expertProfile.expertId?.pricePerMinute ?? 0) * duration,
+          ratePerMinute: expertProfile?.pricePerMinute ?? 0,
+          totalCost: (expertProfile?.pricePerMinute ?? 0) * duration,
           confirmationStatus: "pending",
         };
 
@@ -293,11 +295,9 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
 
         // Prepare the order data
         const orderData = {
-          amount: (
-            (expertProfile.expertId?.pricePerMinute ?? 0) * duration
-          ).toString(),
+          amount: ((expertProfile?.pricePerMinute ?? 0) * duration).toString(),
           sessionId: bookingResponse._id,
-          expertId: expertProfile.expertId?._id ?? "",
+          expertId: expertProfile?._id ?? "",
           currency: "INR",
         };
 
@@ -371,7 +371,7 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
             </div>
 
             <div className="flex gap-2">
-              {expertProfile?.expertId?.socialMedia?.map(
+              {expertProfile?.socialMedia?.map(
                 (link: string, index: number) => {
                   if (link.trim() !== "") {
                     const icon = getSocialMediaIcon(link);
@@ -401,11 +401,7 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
           </div>
 
           <p className="text-lg w-4/5 -mt-3 font-regular  text-[#A4A4A4] overflow-hidden whitespace-nowrap overflow-ellipsis">
-            {loading ? (
-              <Skeleton width={150} />
-            ) : (
-              expertProfile?.expertId?.profession
-            )}{" "}
+            {loading ? <Skeleton width={150} /> : expertProfile?.profession}{" "}
           </p>
           <p className="text-lg font-regular mt-2 text-[#A4A4A4]">
             {loading ? <Skeleton count={2} /> : expertUser.bio}
@@ -452,18 +448,18 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
             </p>
             {loading ? (
               <Skeleton count={3} className="h-12 mt-2" />
+            ) : expertProfile?.expertiseAreas &&
+              expertProfile?.expertiseAreas.length > 0 ? (
+              expertProfile.expertiseAreas.map((expertise, index) => (
+                <div
+                  key={index}
+                  className="bg-[#ECEBE7] mt-2 py-2 pl-4 rounded-xl"
+                >
+                  <p className="text-[#484848] font-medium">{expertise}</p>
+                </div>
+              ))
             ) : (
-              expertProfile?.expertId?.expertiseAreas &&
-              expertProfile?.expertId?.expertiseAreas.map(
-                (expertise: string, index: number) => (
-                  <div
-                    key={index}
-                    className="bg-[#ECEBE7] mt-2 py-2 pl-4 rounded-xl"
-                  >
-                    <p className="text-[#484848] font-medium">{expertise}</p>
-                  </div>
-                )
-              )
+              <p>No expertise areas found.</p>
             )}
           </div>
 
@@ -516,8 +512,8 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
                 </div>
                 <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
                   ₹
-                  {expertProfile?.expertId?.pricePerMinute
-                    ? expertProfile.expertId.pricePerMinute * duration
+                  {expertProfile?.pricePerMinute
+                    ? expertProfile.pricePerMinute * duration
                     : 0}
                   <span>
                     <FiArrowRight size={24} className="font-bold" />
@@ -647,7 +643,7 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
                     <ClipLoader color="#ff252525" size={24} />
                   ) : (
                     <span className="flex gap-1 items-center">
-                      ₹{expertProfile.expertId.pricePerMinute * duration}
+                      ₹{expertProfile.pricePerMinute * duration}
                       <span>
                         <FiArrowRight size={24} className="font-bold" />
                       </span>

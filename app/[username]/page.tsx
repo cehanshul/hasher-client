@@ -52,17 +52,20 @@ async function generateMetadataFromExpertMetadata({
   username: string;
 }): Promise<Metadata> {
   try {
-    console.log(`Username for getmetadata ${username}`);
+    // console.log(`Username for getmetadata ${username}`);
     const response = await fetchExpertDataBackend(username);
-    console.log(
-      `Response for expertExpertDatabackend ${JSON.stringify(response)}`
-    );
+    // console.log(
+    //   `Response for expertExpertDatabackend ${JSON.stringify(response)}`
+    // );
     if (response.success && response.data && response.data.expert) {
       const expertUser = response.data.expert;
       const expertProfile = response.data.expert.expertId;
       return {
         title: expertUser.name,
         description: expertProfile.profession,
+        twitter: {
+          card: "summary_large_image",
+        },
         openGraph: {
           title: expertUser.name,
           description: expertProfile.profession,

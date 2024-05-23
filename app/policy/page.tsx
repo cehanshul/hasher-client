@@ -1,6 +1,9 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import React from "react";
-
+export const metadata: Metadata = {
+  title: "Privacy Policy ",
+};
 const Policy = () => {
   return (
     <div className=" max-w-xl  text-[#252525] mb-24 text-[16px] pb-4 mt-auto text-sm leading-normal  mx-auto">
