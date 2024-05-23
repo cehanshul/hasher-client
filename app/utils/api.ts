@@ -1,4 +1,5 @@
 import axios from "axios";
+import { APIResponse } from "../types/expertType";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -6,13 +7,15 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    // Retrieve the userData JSON string from local storage
-    const userDataJSON = localStorage.getItem("userData");
-    if (userDataJSON) {
-      const userData = JSON.parse(userDataJSON);
-      const token = userData.token; // Extracting token from userData
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    if (typeof window !== "undefined") {
+      // Check if running on the client-side
+      const userDataJSON = localStorage.getItem("userData");
+      if (userDataJSON) {
+        const userData = JSON.parse(userDataJSON);
+        const token = userData.token;
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
     }
     return config;
@@ -23,3 +26,13 @@ api.interceptors.request.use(
 );
 
 export default api;
+
+// api.ts
+export const fetchExpertDataBackend = async (
+  username: string
+): Promise<any> => {
+  console.log("Username received in fetchExpertDataBackend:", username);
+  const response = await api.get(`/api/users/${username}`);
+  console.log(`Data from API: ${JSON.stringify(response.data)}`);
+  return response.data;
+};

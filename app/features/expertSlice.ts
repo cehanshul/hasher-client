@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import api from "../utils/api";
 
-interface Review {
+export interface Review {
   _id: string;
   comment: string;
   rating: number;
@@ -19,7 +19,7 @@ interface Review {
   };
 }
 
-interface ExpertState {
+export interface ExpertState {
   expertProfile?: ExpertProfile;
   expertUser?: {
     _id: string;
@@ -37,7 +37,7 @@ interface ExpertState {
   error: string | null;
 }
 
-interface AvailabilitySlot {
+export interface AvailabilitySlot {
   day: string;
   isAvailable: boolean;
   slots: {
@@ -47,7 +47,7 @@ interface AvailabilitySlot {
   }[];
   _id: string;
 }
-interface ExpertProfile {
+export interface ExpertProfile {
   _id: string;
   userId: string;
   expertiseAreas: string[];
@@ -71,7 +71,7 @@ interface ExpertProfile {
   fcmToken: string | null;
 }
 
-interface ExpertDetails {
+export interface ExpertDetails {
   _id: string;
   userId: UserData;
   expertiseAreas: string[];
@@ -86,13 +86,13 @@ interface ExpertDetails {
   __v: number;
 }
 
-interface UserData {
+export interface UserData {
   _id: string;
   name: string;
   profilePicture: string;
 }
 
-interface APIResponse {
+export interface APIResponse {
   expert: ExpertProfile;
   reviews: Review[];
   totalReviews: number;
