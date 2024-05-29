@@ -36,6 +36,7 @@ const Policy = () => {
         collect data including your IP address, browser type, Internet service
         provider, referring/exit pages, and date/time stamps.
       </p>
+
       <h2 className="text-[22px] mt-10 font-bold">
         Personal Information we collect
       </h2>
