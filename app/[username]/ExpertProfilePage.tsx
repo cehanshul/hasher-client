@@ -21,6 +21,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 import { ClipLoader } from "react-spinners";
+import CustomSwiper from "./DateSwiper";
 
 declare global {
   interface Window {
@@ -570,35 +571,10 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
           </div>
 
           <p className="mt-6">DATE</p>
-          <div className="flex overflow-x-auto">
-            <div className="flex space-x-2">
-              {availabilityDates.map((dateData) => (
-                <button
-                  key={dateData.date}
-                  className={`p-2 rounded-lg border ${
-                    dateData.selected
-                      ? "bg-gray-200 border-gray-400"
-                      : "bg-white border-gray-200"
-                  }`}
-                  onClick={() => handleDateSelection(dateData.date)}
-                >
-                  <div className="text-center">
-                    <div className="text-lg">
-                      {new Date(dateData.date).toLocaleDateString("en-US", {
-                        weekday: "short",
-                      })}
-                    </div>
-                    <div className="font-semibold">
-                      {new Date(dateData.date).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+          <CustomSwiper
+            availabilityDates={availabilityDates}
+            handleDateSelection={handleDateSelection}
+          />
 
           <p className="mt-6">TIME SLOTS</p>
           <div className="grid grid-cols-4 md:grid-cols-6 mb-36 gap-2">
