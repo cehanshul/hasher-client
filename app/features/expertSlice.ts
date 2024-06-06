@@ -1,6 +1,4 @@
-// redux/expertSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import api from "../utils/api";
 
 export interface Review {
@@ -33,6 +31,7 @@ export interface ExpertState {
   totalReviews: number;
   averageRating: string | null;
   totalMeetings: number;
+  analytics?: any;
   loading: boolean;
   error: string | null;
 }
@@ -47,6 +46,7 @@ export interface AvailabilitySlot {
   }[];
   _id: string;
 }
+
 export interface ExpertProfile {
   _id: string;
   userId: string;
@@ -65,6 +65,7 @@ export interface ExpertProfile {
   username: string;
   bio: string;
   isVerified: boolean;
+  // lastMinuteBooking: number;
   profilePicture: string;
   expertId: ExpertDetails;
   wallet: string;
@@ -79,6 +80,7 @@ export interface ExpertDetails {
   profession: string;
   pricePerMinute: number;
   isAvailable: boolean;
+  // lastMinuteBooking: number;
   availabilitySlots: AvailabilitySlot[];
   blockedDates: any[];
   createdAt: string;
@@ -108,16 +110,46 @@ const initialState: ExpertState = {
   totalReviews: 0,
   averageRating: null,
   totalMeetings: 0,
+  analytics: undefined,
   loading: false,
   error: null,
 };
 
+export const updateExpert = createAsyncThunk<
+  void,
+  { userId: string; updatedDetails: Partial<ExpertDetails> }
+>(
+  "expert/updateExpert",
+  async ({ userId, updatedDetails }, { rejectWithValue }) => {
+    try {
+      await api.put(`/api/users/experts/${userId}`, updatedDetails);
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 export const fetchExpertData = createAsyncThunk(
   "expert/fetchExpertData",
   async (username: string) => {
-    const response = await api.get(`/api/users/${username}`);
+    const response = await api.get(`/api/users/username/${username}`);
     console.log(`data from API: ${JSON.stringify(response.data)}`);
     return response.data.data as APIResponse;
+  }
+);
+
+export const fetchExpertAnalytics = createAsyncThunk(
+  "expert/fetchExpertAnalytics",
+  async (expertId: string) => {
+    const response = await api.get(`/reviews/expert/${expertId}`);
+    return response.data;
+  }
+);
+
+export const fetchExpertReviews = createAsyncThunk(
+  "expert/fetchExpertReviews",
+  async (expertId: string) => {
+    const response = await api.get(`/reviews/reviewee/${expertId}/10/0`);
+    return response.data;
   }
 );
 
@@ -141,7 +173,7 @@ const expertSlice = createSlice({
           state.averageRating =
             action.payload.averageRating !== null
               ? action.payload.averageRating.toString()
-              : null; // Convert to string or set to null
+              : null;
           state.totalMeetings = action.payload.totalMeetings;
           state.expertUser = {
             _id: action.payload.expert._id,
@@ -155,6 +187,31 @@ const expertSlice = createSlice({
       .addCase(fetchExpertData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch expert data.";
+      })
+      .addCase(fetchExpertAnalytics.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExpertAnalytics.fulfilled, (state, action) => {
+        state.loading = false;
+        state.analytics = action.payload;
+      })
+      .addCase(fetchExpertAnalytics.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || "Failed to fetch expert analytics.";
+      })
+      .addCase(fetchExpertReviews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchExpertReviews.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reviews = action.payload;
+      })
+      .addCase(fetchExpertReviews.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch expert reviews.";
       });
   },
 });

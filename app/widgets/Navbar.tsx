@@ -132,7 +132,7 @@ const Navbar: React.FC = () => {
 
   return (
     <div>
-      {pathname !== "/search" && (
+      {pathname !== "/search" && pathname !== "/dash" && (
         <div className="fixed top-0 left-0 right-0 z-10">
           <div className="w-full py-4 px-4 md:py-4 bg-white border-[#F2F2F2] border-b-[1px] z-50 fixed top-0 left-0 right-0">
             <div className="max-w-7xl mx-auto flex justify-between items-center">

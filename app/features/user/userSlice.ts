@@ -1,10 +1,7 @@
-// src/features/user/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-
 import { fetchUser, updateUser } from "../../services/userService";
-import api from "../../utils/api";
 import { RootState } from "../../store/store";
+import api from "../../utils/api";
 
 interface AvailabilitySlot {
   _id: string;
@@ -31,6 +28,7 @@ interface ExpertDetail {
   socialMedia: string[];
   profession: string;
   pricePerMinute: number;
+  // lastMinuteBooking: number;
   isAvailable: boolean;
   availabilitySlots: AvailabilityDay[];
   blockedDates: BlockedDate[];
@@ -66,6 +64,7 @@ interface User {
   wallet: Wallet;
   profilePicture: string;
   fcmToken: string;
+  expertDetails?: ExpertDetail;
 }
 
 interface UserState {
@@ -98,13 +97,15 @@ export const fetchUserDetails = createAsyncThunk(
     }
   }
 );
-export const fetchUserByUsername = createAsyncThunk(
+
+export const fetchUserByUsername = createAsyncThunk<User, string>(
   "user/fetchUserByUsername",
   async (username: string) => {
     const response = await api.get(`/api/users/username/${username}`);
-    return response.data.data;
+    return response.data.data as User;
   }
 );
+
 export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async (
@@ -119,7 +120,7 @@ export const updateUserProfile = createAsyncThunk(
       const updatedUser = await updateUser(userId, userData, token);
       return updatedUser;
     } catch (error: any) {
-      console.error("Error in thunk:", error.message); // Use error.message which is now always set
+      console.error("Error in thunk:", error.message);
       return rejectWithValue(error.message || "Failed to update user profile");
     }
   }

@@ -27,6 +27,8 @@ export interface ExpertDetails {
   userId: UserData;
   expertiseAreas: string[];
   socialMedia: string[];
+  // lastMinuteBooking: number;
+
   profession: string;
   pricePerMinute: number;
   isAvailable: boolean;
@@ -78,6 +80,7 @@ export interface ExpertData {
     bio: string;
     isVerified: boolean;
   };
+  // lastMinuteBooking?: number;
   reviews: Review[];
   totalReviews: number;
   averageRating: number | null;
