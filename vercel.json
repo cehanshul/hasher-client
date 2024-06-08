@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/.well-known/assetlinks.json",
+      "destination": "https://www.hasher.lol/.well-known/assetlinks.json",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "destination": "https://www.hasher.lol/:path*",
+      "permanent": true
+    }
+  ]
+}
