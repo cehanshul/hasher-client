@@ -7,11 +7,15 @@
           "4DB59NJCWS.com.hasher.ios"
         ],
         "paths": [
-          "*"
+          "/:username",
+          "/username/*"
         ],
         "components": [
           {
-            "/": "/*"
+            "/": "/:username"
+          },
+          {
+            "/": "/username/*"
           }
         ]
       }
