@@ -6,24 +6,17 @@
         "appIDs": [
           "4DB59NJCWS.com.hasher.ios"
         ],
-        "paths": [
-          "/:username",
-          "/username/*"
-        ],
         "components": [
           {
-            "/": "/:username"
+            "/": "/:username",
+            "comment": "Matches any single username"
           },
           {
-            "/": "/username/*"
+            "/": "/username/*",
+            "comment": "Matches anything after /username/"
           }
         ]
       }
-    ]
-  },
-  "webcredentials": {
-    "apps": [
-      "4DB59NJCWS.com.hasher.ios"
     ]
   }
 }
