@@ -72,7 +72,7 @@ export interface APIResponse {
 }
 
 export interface ExpertData {
-  expertProfile: ExpertProfile;
+  expertProfile: ExpertProfile | null;
   expertUser: {
     _id: string;
     name: string;

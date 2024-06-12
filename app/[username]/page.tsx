@@ -4,10 +4,18 @@ import ExpertProfilePage from "./ExpertProfilePage";
 import { Metadata } from "next";
 
 const Expert = async ({ params }: { params: { username: string } }) => {
+  let expertData: ExpertData;
+
   try {
     const response = await fetchExpertDataBackend(params.username);
+
+    console.log(
+      `Username received in fetchExpertDataBackend: ${params.username}`
+    );
+    console.log(`response data: ${JSON.stringify(response)}`);
+
     if (response.success && response.data && response.data.expert) {
-      const expertData: ExpertData = {
+      expertData = {
         expertProfile: response.data.expert.expertId,
         expertUser: {
           _id: response.data.expert._id,
@@ -16,24 +24,57 @@ const Expert = async ({ params }: { params: { username: string } }) => {
           bio: response.data.expert.bio,
           isVerified: response.data.expert.isVerified,
         },
-        reviews: response.data.reviews,
-        totalReviews: response.data.totalReviews,
+        reviews: response.data.reviews || [],
+        totalReviews: response.data.totalReviews || 0,
         averageRating:
           response.data.averageRating !== null
             ? Number(response.data.averageRating)
             : null,
-        totalMeetings: response.data.totalMeetings,
+        totalMeetings: response.data.totalMeetings || 0,
         loading: false,
         error: null,
       };
-      return <ExpertProfilePage expertData={expertData} />;
     } else {
-      throw new Error("Failed to fetch expert data");
+      expertData = {
+        expertProfile: null,
+        expertUser: {
+          _id: "",
+          name: params.username,
+          profilePicture: "/images/avatar.jpg",
+          bio: "User doesn't exist",
+          isVerified: false,
+        },
+        reviews: [],
+        totalReviews: 0,
+        averageRating: null,
+        totalMeetings: 0,
+        loading: false,
+        error: "User doesn't exist",
+      };
     }
   } catch (error) {
     console.error("Error fetching expert data:", error);
-    return <div>Error: {(error as Error).message}</div>;
+    expertData = {
+      expertProfile: null,
+      expertUser: {
+        _id: "",
+        name: params.username,
+        profilePicture: "/images/default-profile-picture.png",
+        bio: "User doesn't exist",
+        isVerified: false,
+      },
+      reviews: [],
+      totalReviews: 0,
+      averageRating: null,
+      totalMeetings: 0,
+      loading: false,
+      error: "User doesn't exist",
+    };
   }
+
+  return (
+    <ExpertProfilePage expertData={expertData} username={params.username} />
+  );
 };
 
 export default Expert;
@@ -52,14 +93,12 @@ async function generateMetadataFromExpertMetadata({
   username: string;
 }): Promise<Metadata> {
   try {
-    // console.log(`Username for getmetadata ${username}`);
     const response = await fetchExpertDataBackend(username);
-    // console.log(
-    //   `Response for expertExpertDatabackend ${JSON.stringify(response)}`
-    // );
+
     if (response.success && response.data && response.data.expert) {
       const expertUser = response.data.expert;
       const expertProfile = response.data.expert.expertId;
+
       return {
         title: expertUser.name,
         description: expertProfile.profession,

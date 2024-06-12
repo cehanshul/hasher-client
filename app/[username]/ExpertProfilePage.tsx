@@ -4,11 +4,7 @@ import Image from "next/image";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import {
-  ExpertProfile,
-  Review,
-  fetchExpertData,
-} from "../features/expertSlice";
+import { ExpertProfile, Review } from "../features/expertSlice";
 import { FiArrowRight } from "react-icons/fi";
 import { RxCross1 } from "react-icons/rx";
 import api from "../utils/api";
@@ -42,7 +38,7 @@ interface SlotInfo {
 }
 
 interface ExpertData {
-  expertProfile: ExpertProfile;
+  expertProfile: ExpertProfile | null;
   expertUser: {
     _id: string;
     name: string;
@@ -58,7 +54,13 @@ interface ExpertData {
   error: string | null;
 }
 
-const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
+const ExpertProfilePage = ({
+  expertData,
+  username,
+}: {
+  expertData: ExpertData;
+  username: string;
+}) => {
   const {
     expertProfile,
     expertUser,
@@ -82,7 +84,27 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
   const [availableSlots, setAvailableSlots] = useState<SlotInfo[]>([]);
   const [processedSlots, setProcessedSlots] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
+  const [storeUrl, setStoreUrl] = useState("");
 
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+
+    if (/iphone|ipad|ipod/.test(userAgent)) {
+      setStoreUrl("https://apps.apple.com/app/your-app-id"); // Replace with your App Store link
+    } else if (/android/.test(userAgent)) {
+      setStoreUrl("https://play.google.com/store/apps/details?id=your.app.id"); // Replace with your Play Store link
+    } else if (/macintosh|mac os x/.test(userAgent)) {
+      setStoreUrl("https://apps.apple.com/app/your-app-id"); // Replace with your Mac App Store link
+    } else {
+      setStoreUrl("#"); // Fallback URL or other action if needed
+    }
+  }, []);
+
+  const handleClick = () => {
+    if (storeUrl) {
+      window.open(storeUrl, "_blank");
+    }
+  };
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target.value.length <= 200) {
       setMessage(event.target.value);
@@ -90,25 +112,27 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
   };
 
   const fetchAvailableDates = async () => {
-    try {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const response = await api.get(
-        `/api/users/available/dates/${expertProfile?._id}?timezone=${timezone}`
-      );
-      const data = response.data.map((item: { date: string }) => {
-        const utcDate = new Date(item.date);
-        const localDate = new Date(
-          utcDate.getTime() - utcDate.getTimezoneOffset() * 60000
+    if (expertProfile?._id) {
+      try {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const response = await api.get(
+          `/api/users/available/dates/${expertProfile._id}?timezone=${timezone}`
         );
-        return {
-          date: localDate.toISOString(),
-          day: localDate.toLocaleDateString("en-US", { weekday: "long" }),
-          selected: false,
-        };
-      });
-      setAvailabilityDates(data);
-    } catch (error) {
-      console.error("Failed to fetch availability dates:", error);
+        const data = response.data.map((item: { date: string }) => {
+          const utcDate = new Date(item.date);
+          const localDate = new Date(
+            utcDate.getTime() - utcDate.getTimezoneOffset() * 60000
+          );
+          return {
+            date: localDate.toISOString(),
+            day: localDate.toLocaleDateString("en-US", { weekday: "long" }),
+            selected: false,
+          };
+        });
+        setAvailabilityDates(data);
+      } catch (error) {
+        console.error("Failed to fetch availability dates:", error);
+      }
     }
   };
 
@@ -124,21 +148,23 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
   };
 
   const fetchAvailableSlots = async (date: Date) => {
-    try {
-      setSlotsLoading(true); // Start loading
-      const expertId = expertProfile?._id;
-      const userId = user?._id;
-      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const formattedDate = moment(date).format("YYYY-MM-DD");
-      const response = await api.get(
-        `/api/users/expert/availability/${expertId}/${userId}/${formattedDate}?timezone=${userTimeZone}`
-      );
-      setAvailableSlots(response.data.availability.slots);
-      processSlots(response.data.availability.slots, duration);
-      setSlotsLoading(false); // Stop loading
-    } catch (error) {
-      console.error("Failed to fetch available slots:", error);
-      setSlotsLoading(false); // Stop loading on error
+    if (expertProfile?._id) {
+      try {
+        setSlotsLoading(true); // Start loading
+        const expertId = expertProfile._id;
+        const userId = user?._id;
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const formattedDate = moment(date).format("YYYY-MM-DD");
+        const response = await api.get(
+          `/api/users/expert/availability/${expertId}/${userId}/${formattedDate}?timezone=${userTimeZone}`
+        );
+        setAvailableSlots(response.data.availability.slots);
+        processSlots(response.data.availability.slots, duration);
+        setSlotsLoading(false); // Stop loading
+      } catch (error) {
+        console.error("Failed to fetch available slots:", error);
+        setSlotsLoading(false); // Stop loading on error
+      }
     }
   };
 
@@ -200,14 +226,6 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
     loading: userLoading,
     error: userError,
   } = useSelector((state: RootState) => state.user);
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!expertProfile || !expertUser) {
-    return null;
-  }
 
   const getSocialMediaIcon = (link: string) => {
     const socialMediaIcons: { [key: string]: string } = {
@@ -342,7 +360,7 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-auto relative pt-24 md:pt-28">
+    <div className="max-w-lg mx-auto mt-auto relative pt-16 md:pt-18">
       {!showCheckoutDetails && (
         <div>
           {loading ? (
@@ -360,9 +378,13 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
             <div>
               <div className="flex gap-2">
                 <h1 className="text-2xl font-semibold overflow-hidden whitespace-nowrap overflow-ellipsis">
-                  {loading ? <Skeleton count={1} /> : expertUser.name}
+                  {loading ? (
+                    <Skeleton count={1} />
+                  ) : (
+                    expertUser.name || username
+                  )}
                 </h1>
-                {expertProfile.isVerified == true && (
+                {expertProfile?.isVerified == true && (
                   <Image
                     className="my-auto justify-center"
                     src="/images/icons/verified.svg"
@@ -373,159 +395,175 @@ const ExpertProfilePage = ({ expertData }: { expertData: ExpertData }) => {
                 )}
               </div>
             </div>
+            {!error && (
+              <div className="flex gap-2">
+                {expertProfile?.socialMedia?.map(
+                  (link: string, index: number) => {
+                    if (link.trim() !== "") {
+                      const icon = getSocialMediaIcon(link);
 
-            <div className="flex gap-2">
-              {expertProfile?.socialMedia?.map(
-                (link: string, index: number) => {
-                  if (link.trim() !== "") {
-                    const icon = getSocialMediaIcon(link);
-
-                    return (
-                      <Link
-                        key={index}
-                        href={`https://${link}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <div className="bg-[#ECEBE7] text-green-500 rounded-full p-2.5">
-                          <Image
-                            alt="social media logo"
-                            src={icon}
-                            height={20}
-                            width={20}
-                          />
-                        </div>
-                      </Link>
-                    );
+                      return (
+                        <Link
+                          key={index}
+                          href={`https://${link}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <div className="bg-[#ECEBE7] text-green-500 rounded-full p-2.5">
+                            <Image
+                              alt="social media logo"
+                              src={icon}
+                              height={20}
+                              width={20}
+                            />
+                          </div>
+                        </Link>
+                      );
+                    }
+                    return null;
                   }
-                  return null;
-                }
-              )}
-            </div>
-          </div>
-
-          <p className="text-lg w-4/5 -mt-3 font-regular  text-[#A4A4A4] overflow-hidden whitespace-nowrap overflow-ellipsis">
-            {loading ? <Skeleton width={150} /> : expertProfile?.profession}{" "}
-          </p>
-          <p className="text-lg font-regular mt-2 text-[#A4A4A4]">
-            {loading ? <Skeleton count={2} /> : expertUser.bio}
-          </p>
-
-          <div className="mt-8">
-            <hr />
-            <div className="flex justify-between px-8">
-              <div className="text-center py-2 md:py-4">
-                <p className="text-xl font-semibold">
-                  {loading || totalMeetings === null ? (
-                    <Skeleton width={50} />
-                  ) : (
-                    totalMeetings || 0
-                  )}
-                </p>
-                <p className="text-md text-[#A4A4A4]">Meetings</p>
+                )}
               </div>
-              <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4" />
-              <div className="text-center py-2 md:py-4">
-                <p className="text-xl font-semibold">
-                  {loading ? <Skeleton width={50} /> : averageRating ?? 0}
-                </p>
-                <p className="text-md text-[#A4A4A4]">Rating</p>
-              </div>
-              <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4" />
-              <div className="text-center py-2 md:py-4">
-                <p className="text-xl font-semibold">
-                  {loading || totalReviews === null ? (
-                    <Skeleton width={50} />
-                  ) : (
-                    totalReviews || 0
-                  )}
-                </p>
-                <p className="text-md text-[#A4A4A4]">Reviews</p>
-              </div>
-            </div>
-            <hr />
-          </div>
-
-          <div>
-            <p className="text-xl mt-8 mb-6 font-medium border-b-4 w-6 center">
-              Expertise
-            </p>
-            {loading ? (
-              <Skeleton count={3} className="h-12 mt-2" />
-            ) : expertProfile?.expertiseAreas &&
-              expertProfile?.expertiseAreas.length > 0 ? (
-              expertProfile.expertiseAreas.map((expertise, index) => (
-                <div
-                  key={index}
-                  className="bg-[#ECEBE7] mt-2 py-2 pl-4 rounded-xl"
-                >
-                  <p className="text-[#484848] font-medium">{expertise}</p>
-                </div>
-              ))
-            ) : (
-              <p>No expertise areas found.</p>
             )}
           </div>
 
-          {reviews && reviews.length === 0 && <div className="mb-32" />}
-
-          {reviews && reviews.length > 0 && (
+          {error ? (
+            <div className="text-center mt-20 text-2xl">
+              User doesn&apos;t exist
+            </div>
+          ) : (
             <>
-              <p className="text-xl mt-8 font-medium border-b-4 w-6 center">
-                Reviews
+              <p className="text-lg w-4/5 -mt-3 font-regular text-[#A4A4A4] overflow-hidden whitespace-nowrap overflow-ellipsis">
+                {loading ? <Skeleton width={150} /> : expertProfile?.profession}{" "}
               </p>
-              {reviews.map((review) => (
-                <div key={review._id} className="mt-6">
-                  <div className="border-[1px] rounded-2xl border-[#ECEBE7] p-3 text-[#5F5F5F]">
-                    <p>{review.comment}</p>
-                    <p className="text-lg font-semibold mt-2">
-                      {review.reviewer.name}
+              <p className="text-lg font-regular mt-2 text-[#A4A4A4]">
+                {loading ? <Skeleton count={2} /> : expertUser.bio}
+              </p>
+
+              <div className="mt-8">
+                <hr />
+                <div className="flex justify-between px-8">
+                  <div className="text-center py-2 md:py-4">
+                    <p className="text-xl font-semibold">
+                      {loading || totalMeetings === null ? (
+                        <Skeleton width={50} />
+                      ) : (
+                        totalMeetings || 0
+                      )}
                     </p>
-                    <p className="text-sm text-[#9A9A9A] font-regular">
-                      {new Date(review.createdAt).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}{" "}
+                    <p className="text-md text-[#A4A4A4]">Meetings</p>
+                  </div>
+                  <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4" />
+                  <div className="text-center py-2 md:py-4">
+                    <p className="text-xl font-semibold">
+                      {loading ? <Skeleton width={50} /> : averageRating ?? 0}
                     </p>
+                    <p className="text-md text-[#A4A4A4]">Rating</p>
+                  </div>
+                  <div className="border border-[#ECEBE7] h-12 md:h-16 self-center w-[1px] mx-4" />
+                  <div className="text-center py-2 md:py-4">
+                    <p className="text-xl font-semibold">
+                      {loading || totalReviews === null ? (
+                        <Skeleton width={50} />
+                      ) : (
+                        totalReviews || 0
+                      )}
+                    </p>
+                    <p className="text-md text-[#A4A4A4]">Reviews</p>
                   </div>
                 </div>
-              ))}
-              <div className="mb-30" />
+                <hr />
+              </div>
+
+              <div>
+                <p className="text-xl mt-8 mb-6 font-medium border-b-4 w-6 center">
+                  Expertise
+                </p>
+                {loading ? (
+                  <Skeleton count={3} className="h-12 mt-2" />
+                ) : expertProfile?.expertiseAreas &&
+                  expertProfile?.expertiseAreas.length > 0 ? (
+                  expertProfile.expertiseAreas.map((expertise, index) => (
+                    <div
+                      key={index}
+                      className="bg-[#ECEBE7] mt-2 py-2 pl-4 rounded-xl"
+                    >
+                      <p className="text-[#484848] font-medium">{expertise}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No expertise areas found.</p>
+                )}
+              </div>
+
+              {reviews && reviews.length === 0 && <div className="mb-32" />}
+
+              {reviews && reviews.length > 0 && (
+                <>
+                  <p className="text-xl mt-8 font-medium border-b-4 w-6 center">
+                    Reviews
+                  </p>
+                  {reviews.map((review) => (
+                    <div key={review._id} className="mt-6">
+                      <div className="border-[1px] rounded-2xl border-[#ECEBE7] p-3 text-[#5F5F5F]">
+                        <p>{review.comment}</p>
+                        <p className="text-lg font-semibold mt-2">
+                          {review.reviewer.name}
+                        </p>
+                        <p className="text-sm text-[#9A9A9A] font-regular">
+                          {new Date(review.createdAt).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "long",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )}{" "}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mb-30" />
+                </>
+              )}
+              {reviews && reviews.length > 0 && <div className="mb-32" />}
+              <div className="fixed bottom-4 w-full left-0 right-0 mx-auto">
+                <div className="absolute bottom-4 w-full px-4">
+                  <div
+                    className="text-center items-center justify-between flex gap-2 hover:cursor-pointer rounded-full bg-[#252525] px-4 py-2 text-[#5F5F5F] max-w-lg mx-auto"
+                    // onClick={showCheckoutDetailsSection}
+                    onClick={handleClick}
+                  >
+                    <p className="text-center mx-auto text-2xl py-3 text-white">
+                      Download The app
+                    </p>
+                    {/* <div className="flex gap-2">
+                      <Image
+                        className="my-auto justify-center"
+                        src="/images/icons/calender.svg"
+                        alt="user"
+                        height={44}
+                        width={44}
+                      />
+                      <div className="text-start">
+                        <p className="text-[#ffffff] text-lg">{duration} min</p>
+                        <p className="text-md">Video Session</p>
+                      </div>
+                    </div>
+                    <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
+                      ₹
+                      {expertProfile?.pricePerMinute
+                        ? expertProfile.pricePerMinute * duration
+                        : 0}
+                      <span>
+                        <FiArrowRight size={24} className="font-bold" />
+                      </span>
+                    </p> */}
+                  </div>
+                </div>
+              </div>
             </>
           )}
-          {reviews && reviews.length > 0 && <div className="mb-32" />}
-          <div className="fixed bottom-4 w-full left-0 right-0 mx-auto">
-            <div className="absolute bottom-4 w-full px-4">
-              <div
-                className="text-center items-center justify-between flex gap-2 hover:cursor-pointer rounded-full bg-[#252525] px-4 py-2 text-[#5F5F5F] max-w-lg mx-auto"
-                onClick={showCheckoutDetailsSection}
-              >
-                <div className="flex gap-2">
-                  <Image
-                    className="my-auto justify-center"
-                    src="/images/icons/calender.svg"
-                    alt="user"
-                    height={44}
-                    width={44}
-                  />
-                  <div className="text-start">
-                    <p className="text-[#ffffff] text-lg">{duration} min</p>
-                    <p className="text-md">Video Session</p>
-                  </div>
-                </div>
-                <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
-                  ₹
-                  {expertProfile?.pricePerMinute
-                    ? expertProfile.pricePerMinute * duration
-                    : 0}
-                  <span>
-                    <FiArrowRight size={24} className="font-bold" />
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       )}
       {showCheckoutDetails && (
