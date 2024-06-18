@@ -90,11 +90,13 @@ const ExpertProfilePage = ({
     const userAgent = navigator.userAgent.toLowerCase();
 
     if (/iphone|ipad|ipod/.test(userAgent)) {
-      setStoreUrl("https://apps.apple.com/app/your-app-id"); // Replace with your App Store link
+      setStoreUrl(
+        "https://apps.apple.com/in/app/hasher-connect-with-experts/id6502012082"
+      ); // Replace with your App Store link
     } else if (/android/.test(userAgent)) {
-      setStoreUrl("https://play.google.com/store/apps/details?id=your.app.id"); // Replace with your Play Store link
-    } else if (/macintosh|mac os x/.test(userAgent)) {
-      setStoreUrl("https://apps.apple.com/app/your-app-id"); // Replace with your Mac App Store link
+      setStoreUrl(
+        "https://play.google.com/store/apps/details?id=com.hasher.android"
+      ); // Replace with your Play Store link
     } else {
       setStoreUrl("#"); // Fallback URL or other action if needed
     }
@@ -150,7 +152,7 @@ const ExpertProfilePage = ({
   const fetchAvailableSlots = async (date: Date) => {
     if (expertProfile?._id) {
       try {
-        setSlotsLoading(true); // Start loading
+        setSlotsLoading(true);
         const expertId = expertProfile._id;
         const userId = user?._id;
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -160,10 +162,10 @@ const ExpertProfilePage = ({
         );
         setAvailableSlots(response.data.availability.slots);
         processSlots(response.data.availability.slots, duration);
-        setSlotsLoading(false); // Stop loading
+        setSlotsLoading(false);
       } catch (error) {
         console.error("Failed to fetch available slots:", error);
-        setSlotsLoading(false); // Stop loading on error
+        setSlotsLoading(false);
       }
     }
   };
@@ -534,7 +536,7 @@ const ExpertProfilePage = ({
                     // onClick={showCheckoutDetailsSection}
                     onClick={handleClick}
                   >
-                    <p className="text-center mx-auto text-2xl py-3 text-white">
+                    <p className="text-center mx-auto text-xl md:text-2xl py-2 md:py-3 text-white">
                       Download The app
                     </p>
                     {/* <div className="flex gap-2">
