@@ -1,5 +1,3 @@
-// src/types/bookingsTypes.ts
-
 export interface BookingRequest {
   userId: string;
   expertId: string;

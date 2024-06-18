@@ -88,8 +88,8 @@ select {
 
 .category-name {
   margin-top: 10px;
-  font-size: 16px; /* Adjust font size as needed */
+  font-size: 16px;
 }
 .custom-rounded-skeleton {
-  border-radius: 90px; /* This directly sets the border-radius */
+  border-radius: 90px;
 }

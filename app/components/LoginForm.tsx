@@ -84,7 +84,7 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({
       await dispatch(sendCode({ phone: `${country}${phone}` })).unwrap();
       setShowOTPField(true);
     } catch (error) {
-      // Error handling is done in the authSlice
+      console.log(error);
     }
     setIsSubmitting(false);
   };
@@ -113,7 +113,7 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({
         router.push("/");
       }
     } catch (error) {
-      // Error handling is done in the authSlice
+      console.log(error);
     }
     setIsSubmitting(false);
   };
@@ -132,25 +132,24 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({
       localStorage.getItem("userData") || "{}"
     );
 
-    dispatch(clearError()); // Clear existing errors before attempting update
+    dispatch(clearError());
 
     try {
       const response = await dispatch(
         updateUserProfile({ userId, userData, token })
       ).unwrap();
-      // Store updated user data in localStorage
       localStorage.setItem(
         "userData",
         JSON.stringify({ ...userData, _id: userId, token, status: "ACTIVE" })
       );
 
-      onLoginSuccess(); // Call success action
-      router.push("/"); // Navigate only on success
+      onLoginSuccess();
+      router.push("/");
     } catch (error: any) {
       console.error("Update failed:", error);
       toast.error(
         "Failed to update profile: " + (error.message || "Unknown error")
-      ); // Display error to the user
+      );
     }
     setIsSubmitting(false);
   };

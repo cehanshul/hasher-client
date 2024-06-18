@@ -1,4 +1,3 @@
-// features/searchSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { SearchResult } from "../widgets/Navbar";
 import { searchUsers } from "../services/searchService";
@@ -26,7 +25,6 @@ export const fetchSearchResults = createAsyncThunk(
     try {
       return await searchUsers(query);
     } catch (err: unknown) {
-      // Assert the error type to AxiosError
       const error = err as AxiosError;
       if (error.response) {
         console.error("Axios error:", error.response.data);
@@ -68,7 +66,6 @@ const searchSlice = createSlice({
 
 export const { setQuery, clearResults } = searchSlice.actions;
 
-// Selectors
 export const selectQuery = (state: RootState) => state.search.query;
 export const selectResults = (state: RootState) => state.search.results;
 export const selectIsLoading = (state: RootState) => state.search.isLoading;

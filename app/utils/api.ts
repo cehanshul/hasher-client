@@ -8,7 +8,6 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== "undefined") {
-      // Check if running on the client-side
       const userDataJSON = localStorage.getItem("userData");
       if (userDataJSON) {
         const userData = JSON.parse(userDataJSON);
@@ -27,7 +26,6 @@ api.interceptors.request.use(
 
 export default api;
 
-// api.ts
 export const fetchExpertDataBackend = async (
   username: string
 ): Promise<any> => {
@@ -36,4 +34,3 @@ export const fetchExpertDataBackend = async (
   // console.log(`Data from API: ${JSON.stringify(response.data)}`);
   return response.data;
 };
-//

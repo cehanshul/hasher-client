@@ -1,5 +1,4 @@
-/* Adjusting z-index for swiper navigation buttons */
 .swiper-button-prev,
 .swiper-button-next {
-  z-index: 10; /* Lower than the navbar's z-index */
+  z-index: 10;
 }
