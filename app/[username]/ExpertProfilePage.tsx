@@ -92,19 +92,21 @@ const ExpertProfilePage = ({
     if (/iphone|ipad|ipod/.test(userAgent)) {
       setStoreUrl(
         "https://apps.apple.com/in/app/hasher-connect-with-experts/id6502012082"
-      ); // Replace with your App Store link
+      );
     } else if (/android/.test(userAgent)) {
       setStoreUrl(
         "https://play.google.com/store/apps/details?id=com.hasher.android"
-      ); // Replace with your Play Store link
+      );
     } else {
-      setStoreUrl("#"); // Fallback URL or other action if needed
+      setStoreUrl("#");
     }
   }, []);
 
   const handleClick = () => {
-    if (storeUrl) {
-      window.open(storeUrl, "_blank");
+    if (storeUrl && storeUrl !== "#") {
+      // Ensure the URL is properly encoded
+      const encodedUrl = encodeURI(storeUrl);
+      window.location.href = encodedUrl;
     }
   };
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -533,13 +535,13 @@ const ExpertProfilePage = ({
                 <div className="absolute bottom-4 w-full px-4">
                   <div
                     className="text-center items-center justify-between flex gap-2 hover:cursor-pointer rounded-full bg-[#252525] px-4 py-2 text-[#5F5F5F] max-w-lg mx-auto"
-                    // onClick={showCheckoutDetailsSection}
-                    onClick={handleClick}
+                    onClick={showCheckoutDetailsSection}
+                    // onClick={handleClick}
                   >
-                    <p className="text-center mx-auto text-xl md:text-2xl py-2 md:py-3 text-white">
+                    {/* <p className="text-center mx-auto text-xl md:text-2xl py-2 md:py-3 text-white">
                       Download The app
-                    </p>
-                    {/* <div className="flex gap-2">
+                    </p> */}
+                    <div className="flex gap-2">
                       <Image
                         className="my-auto justify-center"
                         src="/images/icons/calender.svg"
@@ -560,7 +562,7 @@ const ExpertProfilePage = ({
                       <span>
                         <FiArrowRight size={24} className="font-bold" />
                       </span>
-                    </p> */}
+                    </p>
                   </div>
                 </div>
               </div>
