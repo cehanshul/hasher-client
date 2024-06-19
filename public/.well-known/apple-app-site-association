@@ -3,18 +3,9 @@
     "apps": [],
     "details": [
       {
-        "appIDs": [
-          "4DB59NJCWS.com.hasher.ios"
-        ],
-        "components": [
-          {
-            "/": "/:username",
-            "comment": "Matches any single username"
-          },
-          {
-            "/": "/username/*",
-            "comment": "Matches anything after /username/"
-          }
+        "appID": "4DB59NJCWS.com.hasher.ios",
+        "paths": [
+          "/:username"
         ]
       }
     ]
