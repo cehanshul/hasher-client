@@ -97,6 +97,14 @@ const ExpertProfilePage = ({
       setStoreUrl(
         "https://play.google.com/store/apps/details?id=com.hasher.android"
       );
+    } else if (/macintosh|mac os x/.test(userAgent)) {
+      setStoreUrl(
+        "https://apps.apple.com/in/app/hasher-connect-with-experts/id6502012082"
+      );
+    } else if (/windows/.test(userAgent)) {
+      setStoreUrl(
+        "https://play.google.com/store/apps/details?id=com.hasher.android"
+      );
     } else {
       setStoreUrl("#");
     }
@@ -109,6 +117,7 @@ const ExpertProfilePage = ({
       window.location.href = encodedUrl;
     }
   };
+
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target.value.length <= 200) {
       setMessage(event.target.value);
@@ -535,13 +544,13 @@ const ExpertProfilePage = ({
                 <div className="absolute bottom-4 w-full px-4">
                   <div
                     className="text-center items-center justify-between flex gap-2 hover:cursor-pointer rounded-full bg-[#252525] px-4 py-2 text-[#5F5F5F] max-w-lg mx-auto"
-                    onClick={showCheckoutDetailsSection}
-                    // onClick={handleClick}
+                    // onClick={showCheckoutDetailsSection}
+                    onClick={handleClick}
                   >
-                    {/* <p className="text-center mx-auto text-xl md:text-2xl py-2 md:py-3 text-white">
+                    <p className="text-center mx-auto text-xl md:text-2xl py-2 md:py-3 text-white">
                       Download The app
-                    </p> */}
-                    <div className="flex gap-2">
+                    </p>
+                    {/* <div className="flex gap-2">
                       <Image
                         className="my-auto justify-center"
                         src="/images/icons/calender.svg"
@@ -562,7 +571,7 @@ const ExpertProfilePage = ({
                       <span>
                         <FiArrowRight size={24} className="font-bold" />
                       </span>
-                    </p>
+                    </p> */}
                   </div>
                 </div>
               </div>
