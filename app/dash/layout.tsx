@@ -12,7 +12,7 @@ const DashboardLayout: React.FC = () => {
   return (
     <div className="md:flex flex-grow w-full px-5 md:px-0">
       <MenuItems onPageChange={handlePageChange} />
-      <div className="w-px sidebar bg-[#e5e7eb] mx-10 md:block mb-1 min-w-[1px] !h-auto flex !mx-[0]"></div>
+      <div className="w-px sidebar bg-[#e5e7eb] mx-10 md:block mb-1 min-w-[1px] !h-auto fle"></div>x !mx-[0]
       {selectedPage || (
         <div>
           {/* Render default content or a message */}

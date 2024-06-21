@@ -4,7 +4,7 @@ import React from "react";
 
 const Menu = () => {
   return (
-    <div className="NavBar hidden md:block z-[60] md:flex md:flex-col md:items-center bg-[#f9f9fb] md:border-r border-t md:border-t-0 border-[#e3e3e3] pt-[13px] pb-[13px] px-[22px] md:pt-[30px] md:pb-[30px] md:px-[12px]  md:relative fixed left-0 right-0 bottom-[-1px] md:bottom-0">
+    <div className="NavBar hidden  z-[60] md:flex md:flex-col md:items-center bg-[#f9f9fb] md:border-r border-t md:border-t-0 border-[#e3e3e3] pt-[13px] pb-[13px] px-[22px] md:pt-[30px] md:pb-[30px] md:px-[12px]  md:relative fixed left-0 right-0 bottom-[-1px] md:bottom-0">
       <Link
         className=" mx-0 ml-0 py-0 pr-0 md:block hidden"
         href="https://intro.co/"
