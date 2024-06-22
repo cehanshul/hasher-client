@@ -2,38 +2,6 @@ import { Metadata } from "next";
 import Image from "next/image";
 import DownloadButtons from "./DownloadButtons";
 
-export const metadata: Metadata = {
-  title: "Hasher - Connect with Experts",
-  description:
-    "Join the community of smart and curious. Connect with experts using the Hasher app.",
-  viewport: "width=device-width, initial-scale=1",
-  icons: {
-    icon: "/favicon.ico",
-  },
-  openGraph: {
-    title: "Hasher - Connect with Experts",
-    description:
-      "Join the community of smart and curious. Connect with experts using the Hasher app.",
-    url: "https://yourdomain.com",
-    images: [
-      {
-        url: "/images/hasher-logo.svg",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Hasher - Connect with Experts",
-    description:
-      "Join the community of smart and curious. Connect with experts using the Hasher app.",
-    images: [
-      {
-        url: "/images/hasher-logo.svg",
-      },
-    ],
-  },
-};
-
 export default function HomePage() {
   return (
     <div className="flex flex-col md:grid md:grid-cols-3 h-screen">
