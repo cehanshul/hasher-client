@@ -373,7 +373,7 @@ const ExpertProfilePage = ({
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-auto relative pt-16 md:pt-18">
+    <div className="max-w-lg px-4 mx-auto mt-auto relative pt-6 md:pt-18">
       {!showCheckoutDetails && (
         <div>
           {loading ? (
