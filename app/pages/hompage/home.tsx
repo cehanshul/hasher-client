@@ -68,7 +68,7 @@ export default function HomePage() {
 
         <div className="md:mt-auto md:mb-10 w-full">
           <div>
-            <h1 className="font-bold mt-8 md:mt-0 text-4xl md:text-6xl w-full text-center md:text-left">
+            <h1 className="font-bold mt-4 md:mt-0 text-4xl md:text-6xl w-full text-center md:text-left">
               <span className="block">Welcome to</span>
               <span className="block">hasher.</span>
             </h1>
@@ -102,9 +102,9 @@ export default function HomePage() {
         </div>
       </div>
 
-      <div className="h-[40vh] md:h-screen md:col-span-2 order-1 md:order-2 relative">
+      <div className="h-[44vh] md:h-screen md:col-span-2 order-1 md:order-2 relative">
         <Image
-          src="/images/home-image.png"
+          src="/images/home-banner.jpg"
           alt="Hasher"
           layout="fill"
           objectFit="cover"
