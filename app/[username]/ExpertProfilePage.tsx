@@ -377,10 +377,10 @@ const ExpertProfilePage = ({
       {!showCheckoutDetails && (
         <div>
           {loading ? (
-            <Skeleton className="rounded-[90px] h-[420px] w-full " />
+            <Skeleton className="rounded-[35px] h-[420px] w-full " />
           ) : (
             <Image
-              className="rounded-[90px] h-[360px] md:h-[420px] w-full object-cover"
+              className="rounded-[35px] h-[360px] md:h-[420px] w-full object-cover"
               alt="user profile"
               width={450}
               height={450}
