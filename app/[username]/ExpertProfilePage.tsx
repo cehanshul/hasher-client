@@ -320,21 +320,43 @@ const ExpertProfilePage = ({
           userId = userData._id;
         }
 
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        // Get the user's time zone using moment-timezone
+        const timezone = moment.tz.guess();
+
+        // Define the timezone map with a broader type
+        const timezoneMap: { [key: string]: string } = {
+          "Asia/Calcutta": "Asia/Kolkata",
+          // Add any other necessary mappings here
+        };
+
+        // Map the timezone if necessary
+        const correctedTimezone = timezoneMap[timezone] || timezone;
+
+        // Parse the start and end times with the user's timezone
+        const startTimeWithTZ = moment
+          .tz(startTimeStr, correctedTimezone)
+          .format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+        const endTimeWithTZ = moment
+          .tz(calculateEndTime(startTimeStr, duration), correctedTimezone)
+          .format("YYYY-MM-DDTHH:mm:ss.SSSZ");
+
         const bookingData = {
           userId: userId,
           expertId: expertProfile?._id ?? "",
-          startTime: startTimeStr,
-          endTime: calculateEndTime(startTimeStr, duration),
+          startTime: startTimeWithTZ,
+          endTime: endTimeWithTZ,
           sessionType: "video",
           ratePerMinute: expertProfile?.pricePerMinute ?? 0,
           totalCost: (expertProfile?.pricePerMinute ?? 0) * duration,
           confirmationStatus: "pending",
-          timezone: timezone,
+          timezone: correctedTimezone,
         };
 
         if (expertProfile?.pricePerMinute === 0) {
           const response = await api.post("/api/bookings/confirm", bookingData);
+          console.log(
+            `console.log for confirm booking is ${JSON.stringify(response)}`
+          );
         } else {
           console.log(
             `booking details inside expert profile page ************************************** ${JSON.stringify(
@@ -394,17 +416,9 @@ const ExpertProfilePage = ({
   };
 
   const calculateEndTime = (startTime: string, duration: number) => {
-    const [date, time] = startTime.split("T");
-    const [hours, minutes] = time.split(":");
-    const start = new Date(date);
-    start.setHours(parseInt(hours));
-    start.setMinutes(parseInt(minutes));
-    const end = new Date(start.getTime() + duration * 60000);
-    return `${end.toISOString().split("T")[0]}T${end
-      .toTimeString()
-      .slice(0, 5)}`;
+    const endTime = moment(startTime).add(duration, "minutes");
+    return endTime.format("YYYY-MM-DDTHH:mm:ss");
   };
-
   return (
     <div className="max-w-lg px-4 mx-auto mt-auto relative pt-6 md:pt-18">
       {!showCheckoutDetails && (
