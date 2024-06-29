@@ -85,6 +85,11 @@ const ExpertProfilePage = ({
   const [processedSlots, setProcessedSlots] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [storeUrl, setStoreUrl] = useState("");
+  // const {
+  //   user,
+  //   loading: userLoading,
+  //   error: userError,
+  // } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -112,7 +117,6 @@ const ExpertProfilePage = ({
 
   const handleClick = () => {
     if (storeUrl && storeUrl !== "#") {
-      // Ensure the URL is properly encoded
       const encodedUrl = encodeURI(storeUrl);
       window.location.href = encodedUrl;
     }
@@ -164,13 +168,31 @@ const ExpertProfilePage = ({
     if (expertProfile?._id) {
       try {
         setSlotsLoading(true);
+
+        // Retrieve user data from local storage
+        const userDataString = localStorage.getItem("userData");
+        if (!userDataString) {
+          throw new Error("User data not found in local storage");
+        }
+
+        // Parse userData JSON
+        const userData = JSON.parse(userDataString);
+        const userId = userData._id;
         const expertId = expertProfile._id;
-        const userId = user?._id;
+
+        // Get user's timezone
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log(`Time zone is ${userTimeZone}`);
+
+        // Format the date using moment.js
         const formattedDate = moment(date).format("YYYY-MM-DD");
+
+        // Make API call
         const response = await api.get(
           `/api/users/expert/availability/${expertId}/${userId}/${formattedDate}?timezone=${userTimeZone}`
         );
+
+        // Update state with available slots
         setAvailableSlots(response.data.availability.slots);
         processSlots(response.data.availability.slots, duration);
         setSlotsLoading(false);
@@ -234,12 +256,6 @@ const ExpertProfilePage = ({
     setDuration((prev) => (prev > 15 ? prev - 15 : prev));
   };
 
-  const {
-    user,
-    loading: userLoading,
-    error: userError,
-  } = useSelector((state: RootState) => state.user);
-
   const getSocialMediaIcon = (link: string) => {
     const socialMediaIcons: { [key: string]: string } = {
       "instagram.com": "/images/social/instagram.svg",
@@ -295,13 +311,18 @@ const ExpertProfilePage = ({
     setBookingLoading(true);
     try {
       if (selectedTimeSlot) {
-        // Combine the selected date and time slot
         const startDateStr = moment(startDate).format("YYYY-MM-DD");
         const startTimeStr = `${startDateStr}T${selectedTimeSlot}:00`;
+        const userDataString = localStorage.getItem("userData");
+        let userId = "";
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          userId = userData._id;
+        }
 
-        // Prepare the booking data
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const bookingData = {
-          userId: user?._id ?? "",
+          userId: userId,
           expertId: expertProfile?._id ?? "",
           startTime: startTimeStr,
           endTime: calculateEndTime(startTimeStr, duration),
@@ -309,48 +330,60 @@ const ExpertProfilePage = ({
           ratePerMinute: expertProfile?.pricePerMinute ?? 0,
           totalCost: (expertProfile?.pricePerMinute ?? 0) * duration,
           confirmationStatus: "pending",
+          timezone: timezone,
         };
 
-        // Dispatch the bookSession action to create a booking
-        const bookingResponse = await dispatch(
-          bookSession(bookingData)
-        ).unwrap();
+        if (expertProfile?.pricePerMinute === 0) {
+          const response = await api.post("/api/bookings/confirm", bookingData);
+        } else {
+          console.log(
+            `booking details inside expert profile page ************************************** ${JSON.stringify(
+              bookingData
+            )}`
+          );
 
-        // Prepare the order data
-        const orderData = {
-          amount: ((expertProfile?.pricePerMinute ?? 0) * duration).toString(),
-          sessionId: bookingResponse._id,
-          expertId: expertProfile?._id ?? "",
-          currency: "INR",
-        };
+          const bookingResponse = await dispatch(
+            bookSession(bookingData)
+          ).unwrap();
 
-        // Dispatch the createOrder action to create an order
-        const orderResponse = await dispatch(createOrder(orderData)).unwrap();
+          const userDataString = localStorage.getItem("userData");
+          const userData = userDataString ? JSON.parse(userDataString) : null;
+          const userId = userData ? userData._id : null;
+          if (!userId) {
+            console.error("User ID not found in localStorage");
+            return;
+          }
 
-        // Initialize Razorpay with the order details
-        const razorpay = new window.Razorpay({
-          key: orderResponse.razorpayConfig.key,
-          amount: orderResponse.order.amount,
-          currency: orderResponse.order.currency,
-          name: orderResponse.razorpayConfig.name,
-          order_id: orderResponse.order.id,
-          prefill: orderResponse.razorpayConfig.prefill,
-          external: orderResponse.razorpayConfig.external,
-          handler: async function (response: any) {
-            // Verify the payment after successful transaction
-            await dispatch(
-              verifyPayment({
-                orderId: response.razorpay_order_id,
-                paymentId: response.razorpay_payment_id,
-                signature: response.razorpay_signature,
-              })
-            );
-            console.log("Payment successful");
-          },
-        });
+          const orderData = {
+            amount: (expertProfile?.pricePerMinute ?? 0).toString(),
+            sessionId: bookingResponse._id,
+            expertId: expertProfile?._id ?? "",
+            currency: "INR",
+            userId: userId, // Add userId to the orderData
+          };
 
-        // Open the Razorpay payment modal
-        razorpay.open();
+          const orderResponse = await dispatch(createOrder(orderData)).unwrap();
+          const razorpay = new window.Razorpay({
+            key: orderResponse.razorpayConfig.key,
+            amount: orderResponse.order.amount,
+            currency: orderResponse.order.currency,
+            name: orderResponse.razorpayConfig.name,
+            order_id: orderResponse.order.id,
+            prefill: orderResponse.razorpayConfig.prefill,
+            external: orderResponse.razorpayConfig.external,
+            handler: async function (response: any) {
+              await dispatch(
+                verifyPayment({
+                  orderId: response.razorpay_order_id,
+                  paymentId: response.razorpay_payment_id,
+                  signature: response.razorpay_signature,
+                })
+              );
+              console.log("Payment successful");
+            },
+          });
+          razorpay.open();
+        }
       } else {
         console.error("No time slot selected.");
       }
@@ -544,11 +577,30 @@ const ExpertProfilePage = ({
                 <div className="absolute bottom-4 w-full px-4">
                   <div
                     className="text-center items-center justify-between flex gap-2 hover:cursor-pointer rounded-full bg-[#252525] px-4 py-2 text-[#5F5F5F] max-w-lg mx-auto"
-                    // onClick={showCheckoutDetailsSection}
-                    onClick={handleClick}
+                    onClick={showCheckoutDetailsSection}
+                    // onClick={handleClick}
                   >
                     {/* <p className="text-center mx-auto text-xl md:text-2xl py-2 md:py-3 text-white">
                       Download The app
+                    </p> */}
+                    {/* <div className="flex gap-2">
+                      <Image
+                        className="my-auto justify-center"
+                        src="/images/icons/calender.svg"
+                        alt="user"
+                        height={44}
+                        width={44}
+                      />
+                      <div className="text-start">
+                        <p className="text-[#ffffff] text-lg">{duration} min</p>
+                        <p className="text-md">Video Session</p>
+                      </div>
+                    </div> */}
+                    {/* <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
+                      Download
+                      <span>
+                        <FiArrowRight size={24} className="font-bold" />
+                      </span>
                     </p> */}
                     <div className="flex gap-2">
                       <Image
@@ -564,33 +616,14 @@ const ExpertProfilePage = ({
                       </div>
                     </div>
                     <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
-                      Download
-                      {/* <span>
-                        <FiArrowRight size={24} className="font-bold" />
-                      </span> */}
-                    </p>
-                    {/* <div className="flex gap-2">
-                      <Image
-                        className="my-auto justify-center"
-                        src="/images/icons/calender.svg"
-                        alt="user"
-                        height={44}
-                        width={44}
-                      />
-                      <div className="text-start">
-                        <p className="text-[#ffffff] text-lg">{duration} min</p>
-                        <p className="text-md">Video Session</p>
-                      </div>
-                    </div>
-                    <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
                       ₹
                       {expertProfile?.pricePerMinute
-                        ? expertProfile.pricePerMinute * duration
+                        ? expertProfile.pricePerMinute
                         : 0}
                       <span>
                         <FiArrowRight size={24} className="font-bold" />
                       </span>
-                    </p> */}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -696,7 +729,7 @@ const ExpertProfilePage = ({
                 <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
                   ₹
                   {expertProfile?.pricePerMinute
-                    ? expertProfile.pricePerMinute * duration
+                    ? expertProfile.pricePerMinute
                     : 0}
                   <span>
                     <FiArrowRight size={24} className="font-bold" />
