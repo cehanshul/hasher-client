@@ -65,6 +65,8 @@ export default function RootLayout({
     <StoreProvieder>
       <html lang="en">
         <body className={`${inter.className} flex flex-col min-h-screen`}>
+          <ToastContainer />
+
           {/* <ToastContainer
             position="top-right"
             autoClose={5000}

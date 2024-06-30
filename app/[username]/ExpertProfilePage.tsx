@@ -18,6 +18,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Link from "next/link";
 import { ClipLoader } from "react-spinners";
 import CustomSwiper from "./DateSwiper";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 declare global {
   interface Window {
@@ -71,6 +73,7 @@ const ExpertProfilePage = ({
     loading,
     error,
   } = expertData;
+  const router = useRouter();
 
   const dispatch = useDispatch<AppDispatch>();
   const [message, setMessage] = useState<string>("");
@@ -78,13 +81,18 @@ const ExpertProfilePage = ({
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [showCheckoutDetails, setShowCheckoutDetails] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bookingLoading, setBookingLoading] = useState(false);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [availabilityDates, setAvailabilityDates] = useState<DateData[]>([]);
   const [availableSlots, setAvailableSlots] = useState<SlotInfo[]>([]);
   const [processedSlots, setProcessedSlots] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [storeUrl, setStoreUrl] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingMessage, setBookingMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
   // const {
   //   user,
   //   loading: userLoading,
@@ -309,8 +317,9 @@ const ExpertProfilePage = ({
 
   const handleBooking = async () => {
     setBookingLoading(true);
+    setBookingMessage(null);
     try {
-      if (selectedTimeSlot) {
+      if (selectedTimeSlot && startDate) {
         const startDateStr = moment(startDate).format("YYYY-MM-DD");
         const startTimeStr = `${startDateStr}T${selectedTimeSlot}:00`;
         const userDataString = localStorage.getItem("userData");
@@ -351,9 +360,27 @@ const ExpertProfilePage = ({
           confirmationStatus: "pending",
           timezone: correctedTimezone,
         };
+        const bookingDate = new Date(startDate);
+        const endTime = new Date(bookingDate.getTime() + duration * 60000);
+        const bookingInfo = {
+          expertName: expertUser.name,
+          expertProfilePicture: encodeURIComponent(expertUser.profilePicture),
 
+          date: bookingDate.toISOString(),
+          startTime: selectedTimeSlot,
+          endTime: moment(selectedTimeSlot, "HH:mm")
+            .add(duration, "minutes")
+            .format("HH:mm"),
+
+          sessionType: "Quick chat",
+        };
         if (expertProfile?.pricePerMinute === 0) {
           const response = await api.post("/api/bookings/confirm", bookingData);
+          toast.success("Booking confirmed successfully!");
+          router.push(
+            `/booking-successful?${new URLSearchParams(bookingInfo).toString()}`
+          );
+
           console.log(
             `console.log for confirm booking is ${JSON.stringify(response)}`
           );
@@ -394,23 +421,34 @@ const ExpertProfilePage = ({
             prefill: orderResponse.razorpayConfig.prefill,
             external: orderResponse.razorpayConfig.external,
             handler: async function (response: any) {
-              await dispatch(
-                verifyPayment({
-                  orderId: response.razorpay_order_id,
-                  paymentId: response.razorpay_payment_id,
-                  signature: response.razorpay_signature,
-                })
-              );
-              console.log("Payment successful");
+              try {
+                await dispatch(
+                  verifyPayment({
+                    orderId: response.razorpay_order_id,
+                    paymentId: response.razorpay_payment_id,
+                    signature: response.razorpay_signature,
+                  })
+                );
+                toast.success("Payment successful and booking confirmed!");
+                router.push(
+                  `/booking-successful?${new URLSearchParams(
+                    bookingInfo
+                  ).toString()}`
+                );
+              } catch (err) {
+                toast.error("Payment verification failed. Please try again.");
+              }
             },
           });
           razorpay.open();
         }
       } else {
-        console.error("No time slot selected.");
+        toast.error("No time slot selected. Please choose a time slot.");
       }
     } catch (error) {
       console.error("Error during booking and payment:", error);
+
+      toast.error("An error occurred during booking. Please try again.");
     }
     setBookingLoading(false);
   };
@@ -740,20 +778,38 @@ const ExpertProfilePage = ({
                     <p className="text-md">Video Session</p>
                   </div>
                 </div>
-                <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
-                  ₹
-                  {expertProfile?.pricePerMinute
-                    ? expertProfile.pricePerMinute
-                    : 0}
-                  <span>
-                    <FiArrowRight size={24} className="font-bold" />
-                  </span>
-                </p>
+                {bookingLoading ? (
+                  <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
+                    <ClipLoader color="#252525" size={24} />
+                  </p>
+                ) : (
+                  <p className="px-3 py-2 flex gap-1 items-center font-semibold text-lg rounded-full bg-white">
+                    ₹
+                    {expertProfile?.pricePerMinute
+                      ? expertProfile.pricePerMinute
+                      : 0}
+                    <span>
+                      <FiArrowRight size={24} className="font-bold" />
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
           </div>
+          {bookingMessage && (
+            <div
+              className={`fixed top-4 left-0 right-0 mx-auto max-w-lg p-4 rounded-lg ${
+                bookingMessage.type === "success"
+                  ? "bg-green-500"
+                  : "bg-red-500"
+              } text-white`}
+            >
+              {bookingMessage.text}
+            </div>
+          )}
         </div>
       )}
+
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <LoginForm onLoginSuccess={handleCloseModal} />
       </Modal>
