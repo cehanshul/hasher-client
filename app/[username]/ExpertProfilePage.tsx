@@ -500,11 +500,14 @@ const ExpertProfilePage = ({
                   (link: string, index: number) => {
                     if (link.trim() !== "") {
                       const icon = getSocialMediaIcon(link);
+                      const finalLink = link.startsWith("https://")
+                        ? link
+                        : `https://${link}`;
 
                       return (
                         <Link
                           key={index}
-                          href={`https://${link}`}
+                          href={finalLink}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
