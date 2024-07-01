@@ -110,7 +110,7 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({
           ...userData
         } = JSON.parse(localStorage.getItem("userData") || "{}");
         dispatch(setUser({ ...userData, _id: userId }));
-        router.push("/");
+        router.push("#");
       }
     } catch (error) {
       console.log(error);
@@ -144,7 +144,7 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({
       );
 
       onLoginSuccess();
-      router.push("/");
+      router.push("#");
     } catch (error: any) {
       console.error("Update failed:", error);
       toast.error(

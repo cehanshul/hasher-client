@@ -26,7 +26,7 @@ export default function BookingSuccessfulPage() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-8">
         <div className="flex items-center">
           <Image
             src={expertProfilePicture || "/default-avatar.jpg"}
@@ -37,7 +37,7 @@ export default function BookingSuccessfulPage() {
           />
           <span className="ml-2 font-semibold">{expertName}</span>
         </div>
-        <Link href="/" className="text-gray-600">
+        {/* <Link href="/" className="text-gray-600">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
@@ -52,14 +52,14 @@ export default function BookingSuccessfulPage() {
               d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
             />
           </svg>
-        </Link>
+        </Link> */}
       </div>
 
       <div className="text-center mb-6">
         <div className="inline-block p-2 bg-green-100 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-green-600"
+            className="h-14 w-14 text-green-600"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

@@ -372,7 +372,7 @@ const ExpertProfilePage = ({
             .add(duration, "minutes")
             .format("HH:mm"),
 
-          sessionType: "Quick chat",
+          sessionType: "Video Session",
         };
         if (expertProfile?.pricePerMinute === 0) {
           const response = await api.post("/api/bookings/confirm", bookingData);
@@ -408,7 +408,7 @@ const ExpertProfilePage = ({
             sessionId: bookingResponse._id,
             expertId: expertProfile?._id ?? "",
             currency: "INR",
-            userId: userId, // Add userId to the orderData
+            userId: userId,
           };
 
           const orderResponse = await dispatch(createOrder(orderData)).unwrap();
