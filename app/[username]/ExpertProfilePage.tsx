@@ -263,7 +263,8 @@ const ExpertProfilePage = ({
   const decrementDuration = () => {
     setDuration((prev) => (prev > 15 ? prev - 15 : prev));
   };
-
+  
+   // for getting social media icons from links 
   const getSocialMediaIcon = (link: string) => {
     const socialMediaIcons: { [key: string]: string } = {
       "instagram.com": "/images/social/instagram.svg",
@@ -297,7 +298,7 @@ const ExpertProfilePage = ({
   const showCheckoutDetailsSection = () => {
     const userData = localStorage.getItem("userData");
     const user = userData ? JSON.parse(userData) : null;
-
+  
     if (user && user._id) {
       // If user ID exists, show checkout details
       setShowCheckoutDetails(true);
@@ -532,7 +533,7 @@ const ExpertProfilePage = ({
           ) : (
             <>
               <p className="text-lg w-4/5 -mt-3 font-regular text-[#A4A4A4] overflow-hidden whitespace-nowrap overflow-ellipsis">
-                {loading ? <Skeleton width={150} /> : expertProfile?.profession}{" "}
+                {loading ? <Skeleton width={150} /> : expertProfile?.profession}
               </p>
               <p className="text-lg font-regular mt-2 text-[#A4A4A4]">
                 {loading ? <Skeleton count={2} /> : expertUser.bio}
@@ -625,7 +626,8 @@ const ExpertProfilePage = ({
                 </>
               )}
               {reviews && reviews.length > 0 && <div className="mb-32" />}
-              <div className="fixed bottom-4 w-full left-0 right-0 mx-auto">
+              
+                <div className="fixed bottom-4 w-full left-0 right-0 mx-auto">
                 <div className="absolute bottom-4 w-full px-4">
                   <div
                     className="text-center items-center justify-between flex gap-2 hover:cursor-pointer rounded-full bg-[#252525] px-4 py-2 text-[#5F5F5F] max-w-lg mx-auto"

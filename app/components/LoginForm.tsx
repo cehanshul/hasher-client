@@ -17,6 +17,7 @@ import { selectUserState } from "../features/user/userSlice";
 import { toast } from "react-toastify";
 import { RxCross2 } from "react-icons/rx";
 import { ClipLoader } from "react-spinners";
+
 const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({
   onLoginSuccess,
 }) => {
@@ -144,7 +145,7 @@ const LoginForm: React.FC<{ onLoginSuccess: () => void }> = ({
       );
 
       onLoginSuccess();
-      router.push("/");
+      //router.push("/");
     } catch (error: any) {
       console.error("Update failed:", error);
       toast.error(
