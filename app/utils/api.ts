@@ -12,9 +12,18 @@ api.interceptors.request.use(
       if (userDataJSON) {
         const userData = JSON.parse(userDataJSON);
         const token = userData.token;
+        console.log(`Token received: ${token}`);
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
+          console.log(
+            "Authorization header set:",
+            config.headers.Authorization
+          );
+        } else {
+          console.log("No token found in userData.");
         }
+      } else {
+        console.log("No userData found in localStorage.");
       }
     }
     return config;

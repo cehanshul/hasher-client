@@ -8,6 +8,37 @@ import { usePathname } from "next/navigation";
 const inter = Montserrat({ subsets: ["latin"] });
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
+export const metadata: Metadata = {
+  title: "Hasher - Connect with Experts",
+  description:
+    "Join the community of smart and curious. Connect with experts using the Hasher app.",
+  viewport: "width=device-width, initial-scale=1",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Hasher - Connect with Experts",
+    description:
+      "Join the community of smart and curious. Connect with experts using the Hasher app.",
+    url: "https://hasher.lol",
+    images: [
+      {
+        url: "/images/hasher-logo.svg",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Hasher - Connect with Experts",
+    description:
+      "Join the community of smart and curious. Connect with experts using the Hasher app.",
+    images: [
+      {
+        url: "/images/hasher-logo.svg",
+      },
+    ],
+  },
+};
 
 // export const metadata: Metadata = {
 //   title: "Hasher",
@@ -34,6 +65,8 @@ export default function RootLayout({
     <StoreProvieder>
       <html lang="en">
         <body className={`${inter.className} flex flex-col min-h-screen`}>
+          <ToastContainer />
+
           {/* <ToastContainer
             position="top-right"
             autoClose={5000}
