@@ -77,7 +77,7 @@ export default function RootLayout({
             pauseOnFocusLoss
             draggable
             pauseOnHover
-          /> */}
+          />
           {/* <Navbar /> */}
           <main className=" ">{children}</main>
           <Footer />

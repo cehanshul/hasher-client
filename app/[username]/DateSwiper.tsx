@@ -34,7 +34,7 @@ const CustomSwiper: FC<CustomSwiperProps> = ({
   }, []);
 
   return (
-    <div className="relative mt-4">
+    <div className="relative mt-4 md:mx-4">
       <Swiper
         modules={[Navigation]}
         spaceBetween={10}
@@ -59,7 +59,7 @@ const CustomSwiper: FC<CustomSwiperProps> = ({
               }`}
               onClick={() => handleDateSelection(dateData.date)}
             >
-              <div className="text-center">
+              <div className="text-center size-12">
                 <div className="text-lg">
                   <p className="text-sm text-[#252525]">
                     {new Date(dateData.date).toLocaleDateString("en-US", {
@@ -82,13 +82,13 @@ const CustomSwiper: FC<CustomSwiperProps> = ({
       </Swiper>
       <div
         ref={prevRef}
-        className="custom-prev absolute left-[-30px] top-1/2 transform -translate-y-1/2 z-10 cursor-pointer hidden md:block"
+        className="custom-prev absolute left-[-25px] top-1/2 transform -translate-y-1/2 z-10 cursor-pointer hidden md:block"
       >
         <FaChevronLeft className="text-gray-600 w-6 h-6" />
       </div>
       <div
         ref={nextRef}
-        className="custom-next absolute right-[-30px] top-1/2 transform -translate-y-1/2 z-10 cursor-pointer hidden md:block"
+        className="custom-next absolute right-[-24px] top-1/2 transform -translate-y-1/2 z-10 cursor-pointer hidden md:block"
       >
         <FaChevronRight className="text-gray-600 w-6 h-6" />
       </div>
