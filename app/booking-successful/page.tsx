@@ -93,8 +93,8 @@ function BookingSuccessful() {
         </div>
       </div>
       <p className="text-center text-[16px] text-gray-400 px-2 mt-4">
-        "Meeting details have been sent to your mobile, and don't forget to
-        download the app for the video session."
+        &quot;Meeting details have been sent to your mobile, and don&apos;t
+        forget to download the app for the video session.&quot;
       </p>
       <div className="flex gap-3 px-6 mt-4">
         <DownloadButtons />
